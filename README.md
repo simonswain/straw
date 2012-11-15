@@ -27,7 +27,7 @@ infrastructure.
     $ npm install -d
     $ cp config/config.sample.js config/config.js
 
-Run the tests (require `grunt`):
+Run the tests (requires `grunt`):
 
     $ npm test
 
@@ -87,7 +87,7 @@ module.exports = straw.node.extend({
     }
   },
   ping: function() {
-    this.output(false, {'ping': new Date().getTime()});
+    this.output({'ping': new Date().getTime()});
   }
 });
 ```
@@ -101,7 +101,7 @@ module.exports = straw.node.extend({
   total: 0,
   process: function(msg, done) {      
     this.total ++;
-    this.output( false, {total: this.total});    
+    this.output({total: this.total});    
     if ( done ) {
       done(false, {count: this.total});
     }
@@ -133,6 +133,13 @@ messages to the shell, showing you which node they came from.
 
     $ node examples/ping-count-print
 
+
+```
+2012-11-15 14:59:26 STDOUT   print                {"count":1}
+2012-11-15 14:59:27 STDOUT   print                {"count":2}
+2012-11-15 14:59:28 STDOUT   print                {"count":3}
+```
+    
 If you make any changes to a node file, it's will be terminated and
 respawned. This is really handy in development. try running the
 ping-count-print example, edit `examples/nodes/print/index.js` (just
@@ -158,9 +165,10 @@ Each worker node must be defined in the topology as such:
 
 `log` and `outputs` are optional. All other fields are required.
 
-`SDTOUT` will be captured to the log.
+`STDOUT` from the node (e.g. `console.log`) will be captured to the log.
 
-You must define named outputs before using them.
+You must define named outputs in your Topology before using them in
+the node.
 
 Any other fields will be passed in to the worker node as options for
 it to use as it sees fit.
@@ -257,7 +265,7 @@ end script
 Straw takes some inspiration from
 [Storm](https://github.com/nathanmarz/storm) and
 [Max/MSP](http://cycling74.com). It uses some code and concepts from
-(Backbone)[http://backbonejs.org] for the node definitions and event
+[Backbone](http://backbonejs.org) for the node definitions and event
 handling.
 
 ## Release History
