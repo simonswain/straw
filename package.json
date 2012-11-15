@@ -1,7 +1,7 @@
 {
   "name": "straw",
   "description": "Realtime processing framework",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/simonswain/straw",
   "author": {
     "name": "Simon Swain",
@@ -30,10 +30,16 @@
   "dependencies": {
     "hiredis": "~0.1.14",
     "redis": "~0.8.1",
-    "underscore": "~1.4.2"
+    "underscore": "~1.4.2",
+    "node-statsd": "0.0.3"
   },
   "devDependencies": {
     "grunt": "~0.3.16"
   },
-  "keywords": ["stream","realtime","parallel","dataflow"]
+  "keywords": [
+    "stream",
+    "realtime",
+    "parallel",
+    "dataflow"
+  ]
 }

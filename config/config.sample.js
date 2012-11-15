@@ -5,6 +5,12 @@ var redis = {
   port: 6379
 };
 
+var statsd = {
+  prefix: 'straw',
+  host: '127.0.0.1',
+  port: 8125
+};
+
 switch (env) {
 case 'test' :
   break;
@@ -20,4 +26,5 @@ case 'production' :
 }
 
 exports.redis = redis;
+exports.statsd = statsd;
 
