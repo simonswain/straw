@@ -1,6 +1,6 @@
 {
   "name": "straw",
-  "description": "Stream Processing",
+  "description": "Realtime processing framework",
   "version": "0.1.0",
   "homepage": "https://github.com/simonswain/straw",
   "author": {
