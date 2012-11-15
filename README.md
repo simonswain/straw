@@ -1,24 +1,24 @@
 # Straw
 
-Stream processing infrastructure for Node.js
+Simplified realtime stream processing for Node.js
 
-Used to simplify realtime processing in node.
+Straw helps you create a topology of connected worker nodes that
+consume, process, generate and emit messages.
 
-You create a topology simple worker nodes that can consume, process,
-generate and emit messages.
+Each worker node is run in it's own process.
 
-Messages are passed between worker nodes as JSON.
+Messages are passed in and out of worker nodes as JSON.
 
 Redis pubsub is used for message passing, but the worker nodes are
 shielded from this.
 
-Each worker node is run in it's own process. There is nothing stopping
-a node receiving or sending outside the topology, e.g. write to a
-database, fetch or listen for data.
+There is nothing stopping a node receiving or sending outside the
+topology, e.g. write to a database, fetch or listen for data.
 
 You can also inject or receive messages by accessing Redis pubsub
-directly. This lets your topologies play nicely with existing
-infrastructure.
+directly so your topologies can play nicely with existing
+infrastructure, for example having your Express server subscribe to
+one of the channels and publish it out via socket.io.
 
 ## Installation
 
@@ -38,8 +38,8 @@ Run the tests (requires `grunt`):
 ## Usage
 
 By convention you create your workers nodes in a folder called
-`nodes`, Then create the topology by passing in an object describing
-how it is wired up.
+`nodes`, then create the topology, passing in an object describing how
+the nodes are wired up.
 
 This example has a node that generates timestamps once a second, with
 it's output going to another that counts the cumulative number of
@@ -61,8 +61,8 @@ var topo = new straw.topology({
 });
 ```
 
-Worker nodes extends the prototype worker node and override methods as
-required.
+Worker nodes extends the prototype worker node and override only the
+methods needed to do their job.
 
 ```javascript
 var straw = require('straw');
@@ -94,6 +94,9 @@ module.exports = straw.node.extend({
 
 `process()` is called every time a message is passed in to a node.
 
+Your code needs to call `output()` whenever you have a message to send
+out from the node.
+
 ```javascript
 var straw = require('straw');
 module.exports = straw.node.extend({
@@ -109,7 +112,7 @@ module.exports = straw.node.extend({
 });
 ```
 
-Run the topology like this. This example subscribes to a redis channel
+Run the topology like this. This example subscribes to a Redis channel
 to show you the outputs from the counter
 
     $ node examples/ping-count
@@ -126,7 +129,7 @@ Output:
 { count: 3 }
 ```
 
-Press `^C` to stop.
+Press `^c` to stop.
 
 Calling `console.log` from within a node will output timestamped
 messages to the shell, showing you which node they came from.
@@ -140,10 +143,11 @@ messages to the shell, showing you which node they came from.
 2012-11-15 14:59:28 STDOUT   print                {"count":3}
 ```
     
-If you make any changes to a node file, it's will be terminated and
-respawned. This is really handy in development. try running the
+If you make any changes to a node file it's process will be terminated
+and respawned. This is really handy in development. try running the
 ping-count-print example, edit `examples/nodes/print/index.js` (just
-add and delete a space) then save it. It will be killed andrestarted.
+add a space somewhere) then save it. You will see output in the log
+letting you know it's been stopped and restarted.
 
     
 ## Topology
