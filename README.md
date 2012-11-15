@@ -180,7 +180,7 @@ functionality of your node;
 
 ```javascript
 module.exports = straw.node.extend({
-                   title: 'Haman readable name',
+                   title: 'Human readable name',
     initialize: function(opts) {
         // process incoming options (from the topology definition
         // and set up anything you need (e.g. database connection).
