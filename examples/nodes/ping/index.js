@@ -25,6 +25,6 @@ module.exports = straw.node.extend({
     }
   },
   ping: function() {
-    this.output(false, {'ping': new Date().getTime()});
+    this.output({'ping': new Date().getTime()});
   }
 });
