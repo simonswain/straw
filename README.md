@@ -227,6 +227,11 @@ this.counts(); // {"messages": 5, "some-key":4}
 this.counts("some-key"); //
 ```
 
+### StatsD
+
+By default, Straw sends input and output counts to StatsD. You can
+disable this by removing references to StatsD in `config/config.js`
+
 ## Installing as a service
 
 Once you have your topology tested and working, you'll probably want
