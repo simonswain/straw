@@ -229,7 +229,7 @@ Once you have your topology tested and working, you'll probably want
 to install it as a service.
 
 Place this something like `/etc/init/myapp.conf`. The path to your
-node binary may be different, articularly if you are using nvm.
+node binary may be different, particularly if you are using nvm.
 
 ```
 #!upstart
