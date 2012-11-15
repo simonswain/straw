@@ -1,0 +1,33 @@
+round-robin pipes
+
+multiple ins/outs/merge tests
+
+hot swap nodes
+
+export topo
+
+methods to create topo, change connections
+
+stats method (per node, per topo)
+
+stop/pause/restart nodes
+
+examples
+
+remote hosts
+
+variable arg counts to pass in opts to runner and topology. 
+- debug to console or file
+- watch node files for reload on change
+
+use pull based messages instead of pubsub so round robin and
+restart-without-loss is possible (Redis lists, blocking reads)
+
+abstract out pipes
+
+other transports (0MQ?)
+
+pass commands to daemonized topo
+
+node.process - 1 or 2 args. if 2, then channel is first msg second,
+else msg is first and channel is default
