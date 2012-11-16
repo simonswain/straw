@@ -25,7 +25,6 @@ one of the channels and publish it out via socket.io.
     $ npm install straw
     $ cd straw
     $ npm install -d
-    $ cp config/config.sample.js config/config.js
 
 Run the tests (requires `grunt`):
 
@@ -177,6 +176,41 @@ the node.
 Any other fields will be passed in to the worker node as options for
 it to use as it sees fit.
 
+### Options
+
+You can pass options in to the Topology that will be passed in to all
+node runners. These let you set the Redis host and enable StatsD.
+
+```javascript
+var straw = require('straw');
+var topo = new straw.topology({
+  'ping':{
+    'node': __dirname + '/nodes/ping',
+    'output':'ping-out'
+  },
+}, {
+  redis: {
+    host: '127.0.0.1',
+    port: 6379
+  },
+  statsd: {
+    prefix: 'straw',
+    host: '127.0.0.1',
+    port: 8125
+  }
+});
+```
+
+If no options are provide, or redis is not provided, the default shown
+above will be used/
+
+If StatsD is provided, all node inputs and outputs (summed, and by
+name) will be counted using `node-statsd` `increment()`, using the
+node's key as the identifier.
+
+If you provide a prefix, it will be prepended to the nodes's key so
+you can namespace your stats.
+
 ## Node
 
 These methods can/must be overridden depending on the required
@@ -226,11 +260,6 @@ this.count('some-key', howmany);
 this.counts(); // {"messages": 5, "some-key":4}
 this.counts("some-key"); //
 ```
-
-### StatsD
-
-By default, Straw sends input and output counts to StatsD. You can
-disable this by removing references to StatsD in `config/config.js`
 
 ## Installing as a service
 
