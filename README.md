@@ -2,13 +2,12 @@
 
 Realtime processing framework for Node.js
 
-Straw helps you create a Topology of worker nodes that consume,
+Straw helps you create a Topology of worker Nodes that consume,
 process, generate and emit messages, connected together with message
-passing pipes.
+passing Pipes.
 
-Each worker node is run in it's own process.
-
-Messages are passed in and out of worker nodes as JSON.
+Each Node is run in it's own process. Messages are passed in and out
+of Nodes as JSON.
 
 A simple Topology might look like this
 
@@ -20,26 +19,24 @@ Nodes can have multiple inputs and outputs. Messages can be passed out
 to a connected pipe via a node's default output or any number of
 arbitrarily named outputs.
 
-Pipes by default fan-out, with messages going to the inputs of all
+Pipes by default fan-out with messages going to the inputs of all
 connected nodes, but can be configured to distribute messages
 round-robin style.
 
-Redis is used for message passing. Wworker nodes are shielded from
-implementation. All you need to write is the processing for the
-individual nodes. A callback is available for receiving messages and a
-method for sending them.
+Redis is used for message passing but Nodes are shielded from
+implementation. All you need to write is the processing code. A
+callback is available for receiving messages and a method for sending.
 
 There is nothing stopping a node receiving or sending outside the
-topology, e.g. write to a database, fetch or listen for data.
+Topology, e.g. write to a database, fetch or listen for network data.
 
 You can also inject or receive messages by accessing Redis directly so
 your topologies can play nicely with existing infrastructure, for
-example having your Express server subscribe to one of the channels
-and publish it out via socket.io.
+example having an Express server subscribe to one of the channels and
+publish it out via socket.io.
 
-Basic message counting is built in, and StatsD support is included out
-of the box, providing you full visibility of activity across a
-topology.
+StatsD support is included out of the box, giving you visibility of
+activity across a topology.
 
 ## Installing
 
@@ -61,11 +58,11 @@ Run some examples
    
 ## Usage
 
-By convention you create your workers nodes in a folder called
-`nodes`, then create the topology, passing in an object describing how
-the nodes are wired up.
+By convention you create your Nodes in a folder called `nodes`, and
+instantiate a Topology, passing in an object describing how the nodes
+are to be piped together.
 
-This example has a node that generates timestamps once a second, with
+This example has a Node that generates timestamps once a second, with
 it's output going to another that counts the cumulative number of
 pings.
 
@@ -85,15 +82,15 @@ var topo = new straw.topology({
 });
 ```
 
-Worker nodes extends the prototype worker node and override only the
-methods needed to do their job.
+Nodes extends the prototype Node and override only the methods needed
+to do their job.
 
 ```javascript
 var straw = require('straw');
 module.exports = straw.node.extend({
   title: 'Ping',
   timer: null,
-  ops: {interval: 1000},
+  opts: {interval: 1000},
   initialize: function(opts, done){
     this.opts.interval = opts && opts.interval || 1000;
   },
@@ -116,7 +113,8 @@ module.exports = straw.node.extend({
 });
 ```
 
-`process()` is called every time a message is passed in to a node.
+`process()` is called every time a message receoved at the Node's
+input.
 
 Your code needs to call `output()` whenever you have a message to send
 out from the node.
@@ -173,18 +171,27 @@ ping-count-print example, edit `examples/nodes/print/index.js` (just
 add a space somewhere) then save it. You will see output in the log
 letting you know it's been stopped and restarted.
 
+The examples are stored in a folder named after each node, it's fine
+making a folder called nodes and naming each node's file directly.
+Just make sure you use `__dirname + './path/to/nodes/some-node.js'` in
+your Topology definition.
+
+```
+nodes/my-node.js
+nodes/some-node.js
+```
     
 ## Topology
 
-Each worker node must be defined in the topology as such:
+Each Node must be defined in the Topology like so:
 
 ```javascript
 '<your-key>':{
     'node': '<absolute-path-to-node>',
     'input':'<redis-channel-in>',
-    'output':'<default-redis-channel-out>',
+    'output':'<redis-channel-out>',
     'outputs': {
-        'named-output':'<redis-channel-out>',
+        'named-output':'<some-redis-channel-out>',
         'another-named-output':'<another-redis-channel-out>'
         },
     'log': '<file-to-log-output-to>'
@@ -192,7 +199,7 @@ Each worker node must be defined in the topology as such:
 ```
 
 To specify the location of a node relative to your topology code, use
-`__dirname + '../where/is/my/node'`.
+`__dirname + '../where/is/my/node.js'`.
 
 `input` and `output` can either be the key of a single pipe, or an array of
 pipe keys. This lets you aggregate input and branch output.
@@ -202,7 +209,7 @@ pipe keys. This lets you aggregate input and branch output.
 input: 'some-pipe'
 
 // multiple
-input: ['this-pipe','that-pipe]
+input: ['this-pipe','that-pipe']
 ```
 
 `log` and `outputs` are optional. All other fields are required.
@@ -212,8 +219,8 @@ input: ['this-pipe','that-pipe]
 You must define named outputs in your Topology before using them in
 the node.
 
-Any other fields will be passed in to the worker node as options for
-it to use as it sees fit.
+Any other fields will be passed in to the Node as options for it to
+use as it sees fit.
 
 ### Options
 
@@ -241,14 +248,14 @@ var topo = new straw.topology({
 ```
 
 If no options are provide, or redis is not provided, the default shown
-above will be used/
+above will be used.
 
-If StatsD is provided, all node inputs and outputs (summed, and by
-name) will be counted using `node-statsd` `increment()`, using the
+If StatsD is provided, all node inputs and outputs (summed, and split
+out by key) will be counted with `node-statsd.increment()`, using the
 node's key as the identifier.
 
 If you provide a prefix, it will be prepended to the nodes's key so
-you can namespace your stats.
+you can namespace your stats across multiple Topologies.
 
 ## Nodes
 
@@ -279,17 +286,18 @@ module.exports = straw.node.extend({
         // start some background processing here e.g. fetch or
         // generate data
     },
-    stop: function() {
-        // stop background processing. will be called when terminating.
+    stop: function(done) {
+        // stop background processing. will be called when
+        terminating.
+        done();
     }
 });
 ```
 
 ## Pipes
 
-By default, the pipes connecting nodes are fan-out, using Redis
-PubSub. Every connected node will receive a copy of a message that is
-output.
+By default the pipes connecting nodes fan-out using Redis PubSub.
+Every connected node will receive a copy of a message that is output.
 
 You can configure pipes to be round-robin in your Topology definition
 alongside your nodes. Pipes do not have any code to load.
@@ -304,8 +312,9 @@ alongside your nodes. Pipes do not have any code to load.
 Nodes receiving input from this pipe will receive messages in turn,
 with only one connected node receiving each message.
 
-If set, the `purge` option ensures the pipe is cleared when the
-Topology is started so messages from previous runs are not consumed.
+If set the `purge` option ensures the pipe is cleared when the
+Topology is started so un-processed messages from previous runs are
+not consumed.
 
 Round-robin pipes are implemented using redis lists and blocking pops.
 
@@ -324,8 +333,8 @@ this.counts("some-key"); // 4
 
 ## Installing as a service
 
-Once you have your topology tested and working, you'll probably want
-to install it as a service.
+Once you have your Topology tested and working you'll probably want to
+install it as a service.
 
 Place this somewhere like `/etc/init/myapp.conf`. The path to your
 node binary may be different, particularly if you are using nvm.
@@ -347,10 +356,11 @@ end script
 
      $ sudo service myapp start
 
-## Wishlist
+## Todo
 
 * create and change topologies dynamically
 * run workers on remote hosts
+* expose counts via Topology
 
 ## Thanks
 
