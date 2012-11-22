@@ -1,28 +1,53 @@
 # Straw
 
-Simplified realtime stream processing for Node.js
+Realtime processing framework for Node.js
 
-Straw helps you create a topology of connected worker nodes that
-consume, process, generate and emit messages.
+Straw helps you create a Topology of worker nodes that consume,
+process, generate and emit messages, connected together with message
+passing pipes.
 
 Each worker node is run in it's own process.
 
 Messages are passed in and out of worker nodes as JSON.
 
-Redis pubsub is used for message passing, but the worker nodes are
-shielded from this.
+A simple Topology might look like this
+
+```
+  ping --> count --> print
+```
+
+Nodes can have multiple inputs and outputs. Messages can be passed out
+to a connected pipe via a node's default output or any number of
+arbitrarily named outputs.
+
+Pipes by default fan-out, with messages going to the inputs of all
+connected nodes, but can be configured to distribute messages
+round-robin style.
+
+Redis is used for message passing. Wworker nodes are shielded from
+implementation. All you need to write is the processing for the
+individual nodes. A callback is available for receiving messages and a
+method for sending them.
 
 There is nothing stopping a node receiving or sending outside the
 topology, e.g. write to a database, fetch or listen for data.
 
-You can also inject or receive messages by accessing Redis pubsub
-directly so your topologies can play nicely with existing
-infrastructure, for example having your Express server subscribe to
-one of the channels and publish it out via socket.io.
+You can also inject or receive messages by accessing Redis directly so
+your topologies can play nicely with existing infrastructure, for
+example having your Express server subscribe to one of the channels
+and publish it out via socket.io.
 
-## Installation
+Basic message counting is built in, and StatsD support is included out
+of the box, providing you full visibility of activity across a
+topology.
 
-    $ npm install straw
+## Installing
+
+    $ npm install straw 
+
+## Hacking
+
+    $ git clone git@github.com:simonswain/straw.git
     $ cd straw
     $ npm install -d
 
@@ -30,7 +55,7 @@ Run the tests (requires `grunt`):
 
     $ npm test
 
-## Run some examples
+Run some examples
 
     $ node examples/ping-count
    
@@ -166,6 +191,20 @@ Each worker node must be defined in the topology as such:
 }
 ```
 
+To specify the location of a node relative to your topology code, use
+`__dirname + '../where/is/my/node'`.
+
+`input` and `output` can either be the key of a single pipe, or an array of
+pipe keys. This lets you aggregate input and branch output.
+
+```javascript
+// single
+input: 'some-pipe'
+
+// multiple
+input: ['this-pipe','that-pipe]
+```
+
 `log` and `outputs` are optional. All other fields are required.
 
 `STDOUT` from the node (e.g. `console.log`) will be captured to the log.
@@ -211,7 +250,7 @@ node's key as the identifier.
 If you provide a prefix, it will be prepended to the nodes's key so
 you can namespace your stats.
 
-## Node
+## Nodes
 
 These methods can/must be overridden depending on the required
 functionality of your node;
@@ -230,7 +269,6 @@ module.exports = straw.node.extend({
         // some work on it here.
         // ...
         // and send it via the default output
-
         this.output(msg);
 
         // or send it via a named output. The name must be configured
@@ -247,18 +285,41 @@ module.exports = straw.node.extend({
 });
 ```
 
+## Pipes
+
+By default, the pipes connecting nodes are fan-out, using Redis
+PubSub. Every connected node will receive a copy of a message that is
+output.
+
+You can configure pipes to be round-robin in your Topology definition
+alongside your nodes. Pipes do not have any code to load.
+
+```javascript
+  'ping-out': {
+    'pipe': 'round-robin',
+    'purge': true
+  }
+```
+
+Nodes receiving input from this pipe will receive messages in turn,
+with only one connected node receiving each message.
+
+If set, the `purge` option ensures the pipe is cleared when the
+Topology is started so messages from previous runs are not consumed.
+
+Round-robin pipes are implemented using redis lists and blocking pops.
+
 ### Stats
 
 Nodes accumulate counts of messages emitted. You can use the count
 method to count arbitrary values also.
 
 ```javascript
-this.count();
 this.count('some-key');
 this.count('some-key', howmany);
 
 this.counts(); // {"messages": 5, "some-key":4}
-this.counts("some-key"); //
+this.counts("some-key"); // 4
 ```
 
 ## Installing as a service
@@ -266,7 +327,7 @@ this.counts("some-key"); //
 Once you have your topology tested and working, you'll probably want
 to install it as a service.
 
-Place this something like `/etc/init/myapp.conf`. The path to your
+Place this somewhere like `/etc/init/myapp.conf`. The path to your
 node binary may be different, particularly if you are using nvm.
 
 ```
@@ -286,16 +347,9 @@ end script
 
      $ sudo service myapp start
 
-## Issues
+## Wishlist
 
-* no guaranteed delivery of messages
-* no round-robin style processing across multiple instances of the same node
-
-## Nice to have
-
-* pipes between nodes abstracted out
 * create and change topologies dynamically
-* use lists and blocking gets instead of pubsub
 * run workers on remote hosts
 
 ## Thanks
@@ -308,7 +362,9 @@ handling.
 
 ## Release History
 
-15/11/2012 Initial release
+14/11/2012 0.1.0 Initial release
+15/11/2012 0.1.1 StatsD support 
+22/11/2012 0.1.2 Round-robin pipes
 
 ## License
 Copyright (c) 2012 Simon Swain  
