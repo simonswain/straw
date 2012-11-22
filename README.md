@@ -372,9 +372,9 @@ handling.
 
 ## Release History
 
-14/11/2012 0.1.0 Initial release
-15/11/2012 0.1.1 StatsD support 
-22/11/2012 0.1.2 Round-robin pipes
+* 14/11/2012 0.1.0 Initial release
+* 15/11/2012 0.1.1 StatsD support 
+* 22/11/2012 0.1.2 Round-robin pipes
 
 ## License
 Copyright (c) 2012 Simon Swain  
