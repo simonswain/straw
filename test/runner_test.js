@@ -2,6 +2,15 @@ var Runner = require('../lib/runner.js');
 var redis = require('redis');
 
 exports['runner'] = {
+  setUp: function(callback) {
+    this.__log = console.log;
+    console.log = function(){};
+    callback();
+  },
+  tearDown: function(callback) {
+    console.log = this.__log;
+    callback();
+  },
   'new': function(test) {
     test.done();
     // test.expect(3);
