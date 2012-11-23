@@ -23,8 +23,7 @@ topo = new straw.topology({
     'input':['count-out']
   },
   'ping-out': {
-    'pipe': 'round-robin',
-    'purge': true
+    'pipe': 'round-robin'
   },
 
 });
