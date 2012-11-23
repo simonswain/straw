@@ -7,16 +7,22 @@ var straw = require('../../../lib/straw.js')
 module.exports = straw.node.extend({
   title: 'OddEven',
   total: 0,
+  field: 'value',
+  initialize: function() {
+    if ( typeof this.opts.field !== 'undefined' ) {
+      this.field = this.opts.field;
+    }
+  },
   process: function(msg, done) {      
     var r;
 
-    r = ( msg.value % 2 === 0 ) ? 'even' : 'odd';
+    r = ( msg[this.field] % 2 === 0 ) ? 'even' : 'odd';
 
-    this.output(r, {value: msg.value});    
+    this.output(r, {value: msg[this.field]});    
     this.output(false, msg);
 
     if ( done ) {
-      done(false, {value: msg.value, result: r});
+      done(false, {value: msg[this.field], result: r});
     }
   }
 });
