@@ -103,7 +103,7 @@ module.exports = straw.node.extend({
   },
   stop: function(done) {
     clearInterval(this.timer);
-    if ( done ) {
+    if (done) {
       done(false, null);
     }
   },
@@ -127,7 +127,7 @@ module.exports = straw.node.extend({
   process: function(msg, done) {      
     this.total ++;
     this.output({total: this.total});    
-    if ( done ) {
+    if (done) {
       done(false, {count: this.total});
     }
   }
@@ -154,7 +154,7 @@ Output:
 Press `^c` to stop.
 
 Calling `console.log` from within a node will output timestamped
-messages to the shell, showing you which node they came from.
+messages to the shell, showing you which Node they came from.
 
     $ node examples/ping-count-print
 
