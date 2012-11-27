@@ -1,3 +1,5 @@
+"use strict";
+
 var Topology = require('../lib/topology.js');
 
 exports['topology'] = {

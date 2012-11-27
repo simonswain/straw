@@ -1,3 +1,5 @@
+"use strict";
+
 var Runner = require('../lib/runner.js');
 var redis = require('redis');
 

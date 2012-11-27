@@ -1,3 +1,5 @@
+"use strict";
+
 var nodes = require('../examples/nodes/index.js');
 var fs = require('fs');
 

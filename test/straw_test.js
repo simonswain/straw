@@ -1,3 +1,5 @@
+"use strict";
+
 var straw = require('../lib/straw.js');
 
 exports['straw'] = {
