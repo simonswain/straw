@@ -8,8 +8,8 @@ module.exports = straw.node.extend({
   title: 'Ping',
   timer: null,
   opts: {interval: 1000},
-  initialize: function(opts, done){
-    this.opts.interval = opts && opts.interval || 1000;
+  initialize: function(done){
+    this.opts.interval = this.opts && this.opts.interval || 1000;
   },
   run: function() {
     var self = this;
