@@ -310,11 +310,19 @@ alongside your nodes. Pipes do not have any code to load.
 ```
 
 Nodes receiving input from this pipe will receive messages in turn,
-with only one connected node receiving each message.
+with only one connected node receiving each message, and each node
+finishing processing an incoming message before it receives another.
+
+Nodes consuming messages from round-robin pipes *must* execute the
+callback function on their process handler. This lets the runner they
+have finished processing and are ready to consume another message.
+
+`examples/busy-worker.js` and `examples/busy-workers.js` show this in
+operation.
 
 If no purge flag is set or if set to true, pipes are cleared when the
 Topology is started so un-processed messages from previous runs are
-not consumed. To retain them set purge to false.
+not consumed. To retain them across restarts set purge to false.
 
 Round-robin pipes are implemented using redis lists and blocking pops.
 
