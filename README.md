@@ -113,7 +113,7 @@ module.exports = straw.node.extend({
 });
 ```
 
-`process()` is called every time a message receoved at the Node's
+`process()` is called every time a message received at the Node's
 input.
 
 Your code needs to call `output()` whenever you have a message to send
