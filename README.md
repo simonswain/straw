@@ -2,6 +2,8 @@
 
 Realtime processing framework for Node.js
 
+[![Build Status](https://travis-ci.org/simonswain/straw.png)](https://travis-ci.org/simonswain/straw)
+
 Straw helps you create a Topology of worker Nodes that consume,
 process, generate and emit messages, connected together with message
 passing Pipes.
