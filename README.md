@@ -328,6 +328,25 @@ not consumed. To retain them across restarts set purge to false.
 
 Round-robin pipes are implemented using redis lists and blocking pops.
 
+### Tap In/Out
+
+You can connect to a Topology from existing code. These Tap methods
+behave the same as those you would write inside your nodes.
+
+```javascript
+var tap = new straw.tap({
+  'input':'from-topology',
+  'output':'to-topology'
+});
+
+tap.send(msg);
+
+tap..on('message', function() {
+  // ...
+});
+
+```
+
 ### Stats
 
 Nodes accumulate counts of messages emitted. You can use the count
@@ -385,6 +404,7 @@ handling.
 * 14/11/2012 0.1.0 Initial release
 * 15/11/2012 0.1.1 StatsD support 
 * 22/11/2012 0.1.2 Round-robin pipes
+* 23/01/2013 0.1.3 Taps
 
 ## License
 Copyright (c) 2012 Simon Swain  
