@@ -418,7 +418,7 @@ handling.
 * 15/11/2012 0.1.1 StatsD support 
 * 22/11/2012 0.1.2 Round-robin pipes
 * 23/01/2013 0.1.3 Taps
-* 31/01/2013 0.1.4 Cleaning up callback usage
+* 31/01/2013 0.1.5 Cleaning up callback usage
 
 ## License
 Copyright (c) 2012 Simon Swain  
