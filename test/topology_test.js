@@ -28,8 +28,10 @@ exports['topology'] = {
         'input':'passthru-out',
         'output':'count-out'
       }
-    }, function(err, res){      
-      test.done();
+    }, function(err, res){
+      topo.destroy(function(){
+        test.done();
+      });
     });
   },
   'multi-out': function(test) {
@@ -58,7 +60,9 @@ exports['topology'] = {
         'output':'count-both-out'
       }
     }, function(err, res){
-      test.done();
+      topo.destroy(function(){
+        test.done();
+      });
     });
   },
   'merge': function(test) {
@@ -82,7 +86,9 @@ exports['topology'] = {
         'output':'count-even-out'
       }
     }, function(err, res){
-      test.done();
+      topo.destroy(function(){
+        test.done();
+      });
     });
   }
 };

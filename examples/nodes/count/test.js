@@ -8,14 +8,13 @@ module.exports = {
     test.done();
   },
   'process': function(test) {
-    test.expect(2);
+    test.expect(1);
     var node = new Node();
     var msg = {foo:'bar'};
     node.process(
       msg,
-      function(err, result){
+      function(err){
         test.equal( err, false, 'Error should be false.' );
-        test.deepEqual( result, {count: 1}, 'Result should be 1' );
         test.done();
       });
   },
@@ -27,7 +26,7 @@ module.exports = {
       test.deepEqual( data.message, {count: 1}, 'Count should be 1' );
       test.done();
     });
-    node.process({foo:'bar'});
+    node.process({foo:'bar'}, function(){});
   }
 };
 

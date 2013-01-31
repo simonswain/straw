@@ -7,11 +7,13 @@ var straw = require('../../../lib/straw.js')
 module.exports = straw.node.extend({
   title: 'Count',
   total: 0,
+  initialize: function(opts, done){
+    this.opts.key = opts && opts.key || 'count-me-key';
+    done(false);
+  },
   process: function(msg, done) {      
     this.total ++;
     this.output({key: this.opts.key, count: this.total});    
-    if ( done ) {
-      done(false, {count: this.total});
-    }
+    done(false);
   }
 });

@@ -8,33 +8,30 @@ module.exports = {
     test.done();
   },
   'run': function(test) {
-    test.expect(2);
+    test.expect(1);
     var node = new Node();
-    node.run(function(err, result) {
+    node.run(function(err) {
       test.equal( err, false, 'Error should be false' );
-      test.equal( result, null, 'Result should be null' );
       test.done();
     });
   },
   'stop': function(test) {
-    test.expect(2);
+    test.expect(1);
     var node = new Node();
-    node.run();
-    node.stop(function(err, result) {
+    node.run(function(){});
+    node.stop(function(err) {
       test.equal( err, false, 'Error should be false' );
-      test.equal( result, null, 'Result should be null' );
       test.done();
     });
   },
   'process': function(test) {
-    test.expect(2);
+    test.expect(1);
     var node = new Node();
     var msg = {foo:'bar'};
     node.process(
       msg, 
-      function(err, result){
+      function(err){
         test.equal( err, false, 'Error should be false' );
-        test.equal( result, msg, 'Result should be same as input' );
         test.done();      
       });
 
@@ -48,6 +45,6 @@ module.exports = {
       test.equal( data.message, msg, 'Message passed in should come from output' );
       test.done();      
     });
-    node.process(msg);   
+    node.process(msg, function(){});   
   }
 };

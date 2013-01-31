@@ -21,11 +21,10 @@ module.exports = straw.node.extend({
     //console.log(channel, data.message);
   },  
   stop: function(done) {
-    client.punsubscribe('stats:*');
     clearInterval(this.timer);
-    if ( done ) {
-      done(false, null);
-    }
+    client.punsubscribe('stats:*');
+    client.quit();
+    done();
   },
   print: function() {
     console.log( JSON.stringify(this.stats));

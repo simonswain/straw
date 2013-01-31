@@ -8,22 +8,21 @@ module.exports = {
     test.done();
   },
   'stop': function(test) {
-    test.expect(2);
+    test.expect(1);
     var node = new Node();
-    node.run();
-    node.stop(function(err, result) {
+    node.run(function(){});
+    node.stop(function(err) {
       test.equal(err, false, 'Error should be false');
-      test.equal(result, null, 'Result should be null');
       test.done();
     });
   },
   'output': function(test) {
     test.expect(1);
     var node = new Node({interval: 100});
-    node.run();   
+    node.run(function(){});
     node.on('message', function(data){
       test.notEqual(data.message.ping, undefined, 'Ping key should exist');
-      node.stop(function(err, res){
+      node.stop(function(err){
         test.done();      
       });
     });

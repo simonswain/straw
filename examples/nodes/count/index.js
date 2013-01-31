@@ -9,9 +9,11 @@ module.exports = straw.node.extend({
   total: 0,
   process: function(msg, done) {      
     this.total ++;
-    this.output({count: this.total});    
-    if ( done ) {
-      done(false, {count: this.total});
-    }
+    this.output(
+      {count: this.total},
+      function(err){
+        done(err);
+      });
+    done(false);
   }
 });

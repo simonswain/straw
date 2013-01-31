@@ -9,8 +9,6 @@ module.exports = straw.node.extend({
   total: 0,
   process: function(msg, done) {
     console.log(JSON.stringify(msg));
-    if ( done ) {
-      done(false, null);
-    }
+    done(false);
   }
 });

@@ -38,12 +38,10 @@ exports['tap'] = {
         'node': __dirname + '/../examples/nodes/passthru',
         'input':'from-tap',
         'output':'to-tap'
-      }
-    });
-
-    setTimeout(function(){
-      tap.send(msg);
-    }, 200);
-
+      }}, function(){
+        // send output once topo is established
+        tap.send(msg);
+      });
+    
   }
 };

@@ -95,6 +95,7 @@ module.exports = straw.node.extend({
   opts: {interval: 1000},
   initialize: function(opts, done){
     this.opts.interval = opts && opts.interval || 1000;
+    done(false);
   },
   run: function() {
     var self = this;
@@ -102,12 +103,11 @@ module.exports = straw.node.extend({
       self.ping();
     };
     this.timer = setInterval(fn, this.opts.interval);
+    done(false);
   },
   stop: function(done) {
     clearInterval(this.timer);
-    if (done) {
-      done(false, null);
-    }
+    done(false);
   },
   ping: function() {
     this.output({'ping': new Date().getTime()});
@@ -129,9 +129,7 @@ module.exports = straw.node.extend({
   process: function(msg, done) {      
     this.total ++;
     this.output({total: this.total});    
-    if (done) {
-      done(false, {count: this.total});
-    }
+    done(false);
   }
 });
 ```
