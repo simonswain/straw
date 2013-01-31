@@ -165,6 +165,10 @@ messages to the shell, showing you which Node they came from.
 2012-11-15 14:59:28 STDOUT   print                {"count":3}
 ```
     
+(Watching files is disabled for now until I can resolve `Error watch
+EMFILE` being thrown. You can re-enable by changing `this.watch =
+false;` to true at the top of lib/runner.js)
+
 If you make any changes to a node file it's process will be terminated
 and respawned. This is really handy in development. try running the
 ping-count-print example, edit `examples/nodes/print/index.js` (just
@@ -222,6 +226,12 @@ the node.
 Any other fields will be passed in to the Node as options for it to
 use as it sees fit.
 
+You can optionally place a callback function as the last argument to
+`straw.topology` that will be called once all the Nodes are up and
+running.
+
+topology#destroy will take down all the nodes and pipes used in the Topology.
+
 ### Options
 
 You can pass options in to the Topology that will be passed in to all
@@ -262,12 +272,15 @@ you can namespace your stats across multiple Topologies.
 These methods can/must be overridden depending on the required
 functionality of your node;
 
+The `done` are required.
+
 ```javascript
 module.exports = straw.node.extend({
     title: 'Human readable name',
-    initialize: function(opts) {
+    initialize: function(opts, done) {
         // process incoming options (from the topology definition
         // and set up anything you need (e.g. database connection).
+        done(false)
     },
     process: function(msg, done) {
         // process an incoming message. msg will be JSON.
@@ -281,10 +294,12 @@ module.exports = straw.node.extend({
         // or send it via a named output. The name must be configured
         // in your topology
         this.output('named-output', msg);
+        done(false)
     },
-    run: function() {
+    run: function(done) {
         // start some background processing here e.g. fetch or
         // generate data
+        done(false);
     },
     stop: function(done) {
         // stop background processing. will be called when
@@ -403,6 +418,7 @@ handling.
 * 15/11/2012 0.1.1 StatsD support 
 * 22/11/2012 0.1.2 Round-robin pipes
 * 23/01/2013 0.1.3 Taps
+* 31/01/2013 0.1.4 Cleaning up callback usage
 
 ## License
 Copyright (c) 2012 Simon Swain  
