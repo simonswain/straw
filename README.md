@@ -2,6 +2,8 @@
 
 Realtime processing framework for Node.js
 
+Version 0.1.6
+
 [![Build Status](https://travis-ci.org/simonswain/straw.png)](https://travis-ci.org/simonswain/straw)
 
 Straw helps you create a Topology of worker Nodes that consume,
@@ -245,6 +247,7 @@ var topo = new straw.topology({
     'output':'ping-out'
   },
 }, {
+  pidsfile: __dirname + '/../straw-pids.js',
   redis: {
     host: '127.0.0.1',
     port: 6379
@@ -259,6 +262,11 @@ var topo = new straw.topology({
 
 If no options are provide, or redis is not provided, the default shown
 above will be used.
+
+If pidsfile is provided, when Straw starts a Topology it will write the
+PIDs of the nodes to this file, and on next start will attempt to kill
+those PIDs. This experimental feature is to try and kill Nodes left
+still running after a crash.
 
 If StatsD is provided, all node inputs and outputs (summed, and split
 out by key) will be counted with `node-statsd.increment()`, using the
@@ -419,6 +427,7 @@ handling.
 * 22/11/2012 0.1.2 Round-robin pipes
 * 23/01/2013 0.1.3 Taps
 * 31/01/2013 0.1.5 Cleaning up callback usage
+* 08/04/2013 0.1.6 Added pidsfile support
 
 ## License
 Copyright (c) 2012 Simon Swain  
