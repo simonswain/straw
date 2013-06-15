@@ -34,7 +34,9 @@
     "node-statsd": "0.0.3"
   },
   "devDependencies": {
-    "grunt": "~0.3.16"
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-nodeunit": "~0.2.0"
   },
   "keywords": [
     "stream",
