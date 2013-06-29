@@ -1,7 +1,7 @@
 {
   "name": "straw",
   "description": "Realtime processing framework",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "homepage": "https://github.com/simonswain/straw",
   "author": {
     "name": "Simon Swain",
@@ -28,10 +28,10 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "hiredis": "~0.1.14",
-    "redis": "~0.8.1",
-    "underscore": "~1.4.2",
-    "node-statsd": "0.0.3"
+    "hiredis": "~0.1.15",
+    "redis": "~0.8.4",
+    "underscore": "~1.4.4",
+    "node-statsd": "0.0.7"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
