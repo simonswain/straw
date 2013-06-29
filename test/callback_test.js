@@ -19,7 +19,7 @@ exports['topology'] = {
         'input':'ping-out',
         'output':'passthru-out'
       }
-    }, function(err, res){      
+    }, function(err, res){
       topo.destroy(function(){
         test.done();
       });
