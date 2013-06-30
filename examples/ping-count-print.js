@@ -1,7 +1,6 @@
 var straw = require('../lib/straw.js');
-var topo;
 
-topo = new straw.topology({
+var topo = new straw.topology({
   'ping':{
     'node': __dirname + '/../examples/nodes/ping',
     'output':'ping-out'

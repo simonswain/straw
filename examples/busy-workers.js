@@ -1,12 +1,9 @@
 var straw = require('../lib/straw.js');
-var redis = require('redis');
-var counts = redis.createClient();
-var topo;
 
-topo = new straw.topology({
+var topo = new straw.topology({
   'ping':{
     'node': __dirname +'/../examples/nodes/ping',
-    'output':'ping-out'
+    'output':['ping-out','job-out']
   },
   'count':{
     'node': __dirname +'/../examples/nodes/count',
@@ -15,29 +12,26 @@ topo = new straw.topology({
   },
   'worker-1':{
     'node': __dirname +'/../examples/nodes/heavy-lifting',
-    'input':'ping-out',
+    'input':'job-out',
     'output':'done-out'
   },
   'worker-2':{
     'node': __dirname +'/../examples/nodes/heavy-lifting',
-    'input':'ping-out',
+    'input':'job-out',
     'output':'done-out'
   },
   'worker-3':{
     'node': __dirname +'/../examples/nodes/heavy-lifting',
-    'input':'ping-out',
+    'input':'job-out',
     'output':'done-out'
   },
   'jobs-sent':{
     'node': __dirname + '/../examples/nodes/print',
-    'input':['count-out']
+    'input':'count-out'
   },
   'job-done':{
     'node': __dirname + '/../examples/nodes/print',
-    'input':['done-out']
-  },
-  'ping-out': {
-    'pipe': 'round-robin'
-  },
+    'input':'done-out'
+  }
 
 });

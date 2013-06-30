@@ -1,13 +1,10 @@
 var straw = require('../lib/straw.js');
-var redis = require('redis');
-var counts = redis.createClient();
-var topo;
 
 //                        / count \
 // ping -> oddeven [odd] x         + print-me
 //                        \ count /
 
-topo = new straw.topology({
+var topo = new straw.topology({
   'ping':{
     'node': __dirname +'/../examples/nodes/ping',
     'output':'ping-out'
@@ -35,9 +32,6 @@ topo = new straw.topology({
   'print-even':{
     'node': __dirname +'/../examples/nodes/print',
     'input':'even'
-  },
-  'odd': {
-    'pipe': 'round-robin'
-  },
+  }
 
 });

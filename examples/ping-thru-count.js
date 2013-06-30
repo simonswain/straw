@@ -1,16 +1,8 @@
 var straw = require('../lib/straw.js');
-var redis = require('redis');
-var counts = redis.createClient();
-var topo;
 
-counts.on('message', function(channel, msg){
-  msg = JSON.parse(msg);
-  console.log(msg);
-}).subscribe('count-out');
+// [ping] -> [thru] -> [count] -> [print]
 
-// [ping] -> [thru] -> [count]
-
-topo = new straw.topology({
+var topo = new straw.topology({
   'ping':{
     'node': __dirname + '/nodes/ping',
     'output':'ping-out'
@@ -24,6 +16,10 @@ topo = new straw.topology({
     'node': __dirname + '/nodes/count',
     'input':'passthru-out',
     'output':'count-out'
+  },
+  'print':{
+    'node':  __dirname + '/../examples/nodes/print',
+    'input':'count-out'
   }
 });
 
