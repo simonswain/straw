@@ -23,10 +23,10 @@ exports['tap'] = {
     });
 
     var msg = {foo:'bar'};
-
+    
     tap.on('message', function(mess){
-      tap.destroy(function(){        
-        topo.destroy(function(){
+      topo.destroy(function(){
+        tap.destroy(function(){
           test.deepEqual(mess, msg);
           test.done();
         });
@@ -38,10 +38,11 @@ exports['tap'] = {
         'node': __dirname + '/../examples/nodes/passthru',
         'input':'from-tap',
         'output':'to-tap'
-      }}, function(){
-        // send output once topo is established
-        tap.send(msg);
-      });
-    
+      }
+    }, function(err, res){
+      // send output once topo is established
+      tap.send(msg);
+    });
+
   }
 };
