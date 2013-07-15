@@ -2,7 +2,7 @@
  * straw
  * https://github.com/simonswain/straw
  *
- * Copyright (c) 2012 Simon Swain
+ * Copyright (c) 2013 Simon Swain
  * Licensed under the MIT license.
  */
 
