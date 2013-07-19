@@ -1,8 +1,7 @@
 var straw = require('../../../lib/straw.js')
 
 /*
- * outputs whatever is received. This is in effect the prototype
- * worker node
+ * outputs whatever is received.
  */
 
 module.exports = straw.node.extend({
