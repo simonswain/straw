@@ -8,10 +8,11 @@ module.exports = straw.node.extend({
   title: 'OddEven',
   total: 0,
   field: 'value',
-  initialize: function() {
+  initialize: function(opts, done) {
     if ( typeof this.opts.field !== 'undefined' ) {
       this.field = this.opts.field;
     }
+    process.nextTick(done);
   },
   process: function(msg, done) {      
     var r;

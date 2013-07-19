@@ -14,6 +14,6 @@ module.exports = straw.node.extend({
       function(err){
         done(err);
       });
-    done(false);
+    process.nextTick(done);
   }
 });

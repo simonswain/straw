@@ -9,7 +9,7 @@ module.exports = straw.node.extend({
   total: 0,
   initialize: function(opts, done){
     this.opts.key = opts && opts.key || 'count-me-key';
-    done(false);
+    process.nextTick(done);
   },
   process: function(msg, done) {      
     this.total ++;

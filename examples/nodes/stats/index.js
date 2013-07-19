@@ -1,19 +1,19 @@
 var straw = require('../../../lib/straw.js')
-var redis = require('redis'), client = redis.createClient();
 
 module.exports = straw.node.extend({
   title: 'Stats',
   timer: null,
   opts: {interval: 1000},
   stats: {},  
-  initialize: function(opts){
+  initialize: function(opts, done){
     this.opts.interval = opts && opts.interval || 1000;
+    process.nextTick(done);
   },
   run: function() {
     this.timer = setInterval(this.print.bind(this), this.opts.interval);
-    client
+    this.redis.client
       .on('pmessage', this.collect.bind(this))
-      .psubscribe('stats:*');
+      .psubscribe(this.redis.prefix + ':stats:*');
   },
   collect: function(pattern, channel, data){
     var data = JSON.parse(data);
@@ -22,7 +22,7 @@ module.exports = straw.node.extend({
   },  
   stop: function(done) {
     clearInterval(this.timer);
-    client.punsubscribe('stats:*');
+    this.redis.client.punsubscribe(this.redis.prefix + ':stats:*');
     client.quit();
     done();
   },
