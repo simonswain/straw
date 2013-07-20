@@ -2,13 +2,13 @@
 
 Realtime processing framework for Node.js
 
-Version 0.1.6
+Version 0.2.0
 
 [![Build Status](https://travis-ci.org/simonswain/straw.png)](https://travis-ci.org/simonswain/straw)
 
-Straw helps you create a Topology of worker Nodes that consume,
-process, generate and emit messages, connected together with message
-passing Pipes.
+Straw lets you run a Topology of worker Nodes that consume, process,
+generate and emit messages, connected together with message passing
+Pipes.
 
 Each Node is run in it's own process. Messages are passed in and out
 of Nodes as JSON.
@@ -20,24 +20,23 @@ A simple Topology might look like this
 ```
 
 Nodes can have multiple inputs and outputs. Messages can be passed out
-to a connected pipe via a node's default output or any number of
+to a connected pipe via a Node's default output or any number of
 arbitrarily named outputs.
 
-Pipes by default fan-out with messages going to the inputs of all
-connected nodes, but can be configured to distribute messages
-round-robin style.
+Messages are queued between Nodes, with each Node processing one
+message at a time.
 
 Redis is used for message passing but Nodes are shielded from
-implementation. All you need to write is the processing code. A
-callback is available for receiving messages and a method for sending.
+implementation. All you need to write is the processing code, extend a
+handler for receiving messages and call a method to send.
 
-There is nothing stopping a node receiving or sending outside the
+There is nothing preventing a node receiving or sending outside the
 Topology, e.g. write to a database, fetch or listen for network data.
 
-You can also inject or receive messages by accessing Redis directly so
-your topologies can play nicely with existing infrastructure, for
-example having an Express server subscribe to one of the channels and
-publish it out via socket.io.
+A library method is provided to inject or receive messages from
+outside the Topology so you can play nicely with existing
+infrastructure, for example having data pipe in to an Express server
+for publishing out via socket.io.
 
 StatsD support is included out of the box, giving you visibility of
 activity across a topology.
@@ -52,13 +51,13 @@ activity across a topology.
     $ cd straw
     $ npm install -d
 
-Run the tests (requires `grunt`):
+Run the tests (`npm install -g grunt-cli` first):
 
     $ npm test
 
 Run some examples
 
-    $ node examples/ping-count
+    $ node examples/ping-count-print.js
    
 ## Usage
 
@@ -75,13 +74,17 @@ pings.
 var straw = require('straw');
 var topo = new straw.topology({
   'ping':{
-    'node': __dirname + '/nodes/ping',
+    'node': __dirname + '/../examples/nodes/ping',
     'output':'ping-out'
   },
   'count':{
-    'node': __dirname + '/nodes/count',
-    'input':'passthru-out',
+    'node': __dirname + '/../examples/nodes/count',
+    'input':'ping-out',
     'output':'count-out'
+  },
+  'print':{
+    'node': __dirname + '/../examples/nodes/print',
+    'input':'count-out'
   }
 });
 ```
@@ -90,16 +93,16 @@ Nodes extends the prototype Node and override only the methods needed
 to do their job.
 
 ```javascript
-var straw = require('straw');
+var straw = require('straw')
 module.exports = straw.node.extend({
   title: 'Ping',
   timer: null,
   opts: {interval: 1000},
   initialize: function(opts, done){
     this.opts.interval = opts && opts.interval || 1000;
-    done(false);
+    process.nextTick(done);
   },
-  run: function() {
+  run: function(done) {
     var self = this;
     var fn = function() {
       self.ping();
@@ -121,7 +124,7 @@ module.exports = straw.node.extend({
 input.
 
 Your code needs to call `output()` whenever you have a message to send
-out from the node.
+out from the node, and must excute the `done` callback.
 
 ```javascript
 var straw = require('straw');
@@ -130,42 +133,33 @@ module.exports = straw.node.extend({
   total: 0,
   process: function(msg, done) {      
     this.total ++;
-    this.output({total: this.total});    
-    done(false);
+    this.output({count: this.total}, done);
   }
 });
 ```
 
-Run the topology like this. This example subscribes to a Redis channel
-to show you the outputs from the counter
-
-    $ node examples/ping-count
-
-Output:
-
-```
-2012-11-15 12:07:04 STARTING ping
-2012-11-15 12:07:04 STARTING count
-2012-11-15 12:07:04 STARTED  ping
-2012-11-15 12:07:04 STARTED  count
-{ count: 1 }
-{ count: 2 }
-{ count: 3 }
-```
-
-Press `^c` to stop.
-
 Calling `console.log` from within a node will output timestamped
 messages to the shell, showing you which Node they came from.
 
-    $ node examples/ping-count-print
+Run the topology like this:
 
 
 ```
-2012-11-15 14:59:26 STDOUT   print                {"count":1}
-2012-11-15 14:59:27 STDOUT   print                {"count":2}
-2012-11-15 14:59:28 STDOUT   print                {"count":3}
+$ node examples/ping-count-print.js 
+2013-07-20 10:59:17 INIT     6988 print
+2013-07-20 10:59:17 STARTED  6988 print
+2013-07-20 10:59:17 INIT     6985 ping
+2013-07-20 10:59:17 STARTED  6985 ping
+2013-07-20 10:59:17 INIT     6987 count
+2013-07-20 10:59:17 STARTED  6987 count
+2013-07-20 10:59:17 TOPOLOGY STARTED
+2013-07-20 10:59:18 STDOUT   print                {"count":1}
+2013-07-20 10:59:19 STDOUT   print                {"count":2}
+2013-07-20 10:59:20 STDOUT   print                {"count":3}
 ```
+
+Press `^C` to stop.
+
     
 (Watching files is disabled for now until I can resolve `Error watch
 EMFILE` being thrown. You can re-enable by changing `this.watch =
@@ -179,8 +173,8 @@ letting you know it's been stopped and restarted.
 
 The examples are stored in a folder named after each node, it's fine
 making a folder called nodes and naming each node's file directly.
-Just make sure you use `__dirname + './path/to/nodes/some-node.js'` in
-your Topology definition.
+Just make sure you use an absolute path, e.g. `__dirname +
+'./path/to/nodes/some-node.js'` in your Topology definition.
 
 ```
 nodes/my-node.js
@@ -194,28 +188,31 @@ Each Node must be defined in the Topology like so:
 ```javascript
 '<your-key>':{
     'node': '<absolute-path-to-node>',
-    'input':'<redis-channel-in>',
-    'output':'<redis-channel-out>',
+    'input':'in-pipe-name',
+    'output':'out-pipe-name',
     'outputs': {
-        'named-output':'<some-redis-channel-out>',
-        'another-named-output':'<another-redis-channel-out>'
+        ['named-output', 'another-named-output']
         },
     'log': '<file-to-log-output-to>'
 }
 ```
 
 To specify the location of a node relative to your topology code, use
-`__dirname + '../where/is/my/node.js'`.
+`__dirname + '/where/is/my/node.js'`.
 
-`input` and `output` can either be the key of a single pipe, or an array of
-pipe keys. This lets you aggregate input and branch output.
+`input` and `output` can either be the key of a single pipe, or an
+array of pipe keys. This lets you aggregate input and branch output.
+If the output field is an array, the same message will be sent to each
+of them.
 
 ```javascript
 // single
 input: 'some-pipe'
+output: 'that-pipe'
 
 // multiple
 input: ['this-pipe','that-pipe']
+output: ['this-pipe','that-pipe']
 ```
 
 `log` and `outputs` are optional. All other fields are required.
@@ -232,12 +229,15 @@ You can optionally place a callback function as the last argument to
 `straw.topology` that will be called once all the Nodes are up and
 running.
 
-topology#destroy will take down all the nodes and pipes used in the Topology.
+topology#destroy will take down all the nodes and pipes used in the
+Topology.
 
 ### Options
 
 You can pass options in to the Topology that will be passed in to all
-node runners. These let you set the Redis host and enable StatsD.
+node runners. These let you set the Redis host and enable StatsD. You
+can add your own keys to `redis`, which is handy for things like
+adding prefixes to your keys in to the Node.
 
 ```javascript
 var straw = require('straw');
@@ -260,8 +260,8 @@ var topo = new straw.topology({
 });
 ```
 
-If no options are provide, or redis is not provided, the default shown
-above will be used.
+If no options or redis are provided, the default shown above will be
+used.
 
 If pidsfile is provided, when Straw starts a Topology it will write the
 PIDs of the nodes to this file, and on next start will attempt to kill
@@ -280,15 +280,18 @@ you can namespace your stats across multiple Topologies.
 These methods can/must be overridden depending on the required
 functionality of your node;
 
-The `done` are required.
+The `done` calls are required.
+
+In the `#initialize` method, you must use `process.nextTick(done)`
 
 ```javascript
 module.exports = straw.node.extend({
     title: 'Human readable name',
     initialize: function(opts, done) {
-        // process incoming options (from the topology definition
-        // and set up anything you need (e.g. database connection).
-        done(false)
+        // process incoming options from the topology definition,
+        // set up anything you need (e.g. database connection)
+        // and when all finished run the done callback.
+        process.nextTick(done);
     },
     process: function(msg, done) {
         // process an incoming message. msg will be JSON.
@@ -302,16 +305,16 @@ module.exports = straw.node.extend({
         // or send it via a named output. The name must be configured
         // in your topology
         this.output('named-output', msg);
-        done(false)
+        done()
     },
     run: function(done) {
         // start some background processing here e.g. fetch or
         // generate data
-        done(false);
+        done();
     },
     stop: function(done) {
         // stop background processing. will be called when
-        terminating.
+        // terminating.
         done();
     }
 });
@@ -319,26 +322,17 @@ module.exports = straw.node.extend({
 
 ## Pipes
 
-By default the pipes connecting nodes fan-out using Redis PubSub.
-Every connected node will receive a copy of a message that is output.
+Pipes are implemented using Redis lists - `lpush` and `brpop`. 
 
-You can configure pipes to be round-robin in your Topology definition
-alongside your nodes. Pipes do not have any code to load.
+When more than one Node is connected to a given output, only one will
+receive each message. This lets you easily load-balance output from a
+node.
 
-```javascript
-  'ping-out': {
-    'pipe': 'round-robin',
-    'purge': true
-  }
-```
+When a node finished processing a message it must call the `done`
+callback. This signals it's ready for the next message.
 
-Nodes receiving input from this pipe will receive messages in turn,
-with only one connected node receiving each message, and each node
-finishing processing an incoming message before it receives another.
-
-Nodes consuming messages from round-robin pipes *must* execute the
-callback function on their process handler. This lets the runner they
-have finished processing and are ready to consume another message.
+If you want a message to go to several nodes, create multiple outputs
+and connect one node to each.
 
 `examples/busy-worker.js` and `examples/busy-workers.js` show this in
 operation.
@@ -347,8 +341,6 @@ If no purge flag is set or if set to true, pipes are cleared when the
 Topology is started so un-processed messages from previous runs are
 not consumed. To retain them across restarts set purge to false.
 
-Round-robin pipes are implemented using redis lists and blocking pops.
-
 ### Tap In/Out
 
 You can connect to a Topology from existing code. These Tap methods
@@ -356,8 +348,8 @@ behave the same as those you would write inside your nodes.
 
 ```javascript
 var tap = new straw.tap({
-  'input':'from-topology',
-  'output':'to-topology'
+  'input':'from-topology-pipe,
+  'output':'to-topology-pipe
 });
 
 tap.send(msg);
@@ -406,12 +398,6 @@ end script
 
      $ sudo service myapp start
 
-## Todo
-
-* create and change topologies dynamically
-* run workers on remote hosts
-* expose counts via Topology
-
 ## Thanks
 
 Straw takes some inspiration from
@@ -428,7 +414,8 @@ handling.
 * 23/01/2013 0.1.3 Taps
 * 31/01/2013 0.1.5 Cleaning up callback usage
 * 08/04/2013 0.1.6 Added pidsfile support
+* 19/07/2013 0.2.0 Removed Pubsub. Enforced callbacks.
 
 ## License
-Copyright (c) 2012 Simon Swain  
+Copyright (c) 2012-2013 Simon Swain  
 Licensed under the MIT license.
