@@ -14,4 +14,6 @@ var topo = new straw.topology({
     'node': __dirname + '/../examples/nodes/print',
     'input':'count-out'
   }
+},{
+  'purge': true
 });
