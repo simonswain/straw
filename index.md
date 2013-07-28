@@ -44,20 +44,6 @@ activity across a topology.
 
     $ npm install straw 
 
-## Hacking
-
-    $ git clone git@github.com:simonswain/straw.git
-    $ cd straw
-    $ npm install -d
-
-Run the tests (`npm install -g grunt-cli` first):
-
-    $ npm test
-
-Run some examples
-
-    $ node examples/ping-count-print.js
-   
 ## Usage
 
 By convention you create your Nodes in a folder called `nodes`, and
@@ -396,6 +382,22 @@ end script
 ```
 
      $ sudo service myapp start
+
+
+## Hacking
+
+    $ git clone git@github.com:simonswain/straw.git
+    $ cd straw
+    $ npm install -d
+
+Run the tests (`npm install -g grunt-cli` first):
+
+    $ npm test
+
+Run some examples
+
+    $ node examples/ping-count-print.js
+   
 
 ## License
 Copyright (c) 2012-2013 Simon Swain  
