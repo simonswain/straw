@@ -1,0 +1,15 @@
+body {
+    padding: 0 0 48px 0;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.header {
+    padding: 16px;
+    background: #222;
+    color: #33a5c8;
+    margin: 0 0 16px 0;
+}
+
+h2 {
+    font-size: 22px;
+}
