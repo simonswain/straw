@@ -59,16 +59,16 @@ pings.
 var straw = require('straw');
 var topo = new straw.topology({
   'ping':{
-    'node': __dirname + '/../examples/nodes/ping',
+    'node': __dirname + '/nodes/ping',
     'output':'ping-out'
   },
   'count':{
-    'node': __dirname + '/../examples/nodes/count',
+    'node': __dirname + '/nodes/count',
     'input':'ping-out',
     'output':'count-out'
   },
   'print':{
-    'node': __dirname + '/../examples/nodes/print',
+    'node': __dirname + '/nodes/print',
     'input':'count-out'
   }
 });
