@@ -3,6 +3,8 @@ layout: default
 title: Straw - Realtime processing framework for Node.js
 ---
 
+<img src="images/pipes.jpg" />
+
 Version 0.2.0 - <a href="https://github.com/simonswain/straw" id="view-on-github" class="button"><span>View on GitHub</span></a>
 
 <strong>Straw helps you run a Topology of worker Nodes that consume, process,
