@@ -100,7 +100,7 @@ module.exports = straw.node.extend({
   opts: {interval: 1000},
   initialize: function(opts, done){
     this.opts.interval = opts && opts.interval || 1000;
-    process.nextTick(done);
+    done();
   },
   run: function(done) {
     var self = this;
@@ -280,9 +280,10 @@ you can namespace your stats across multiple Topologies.
 These methods can/must be overridden depending on the required
 functionality of your node;
 
-The `done` calls are required.
+The `done` callbacks are required.
 
-In the `#initialize` method, you must use `process.nextTick(done)`
+In the `#initialize` method, you must call `done()` when you're
+finished.
 
 ```javascript
 module.exports = straw.node.extend({
@@ -291,7 +292,7 @@ module.exports = straw.node.extend({
         // process incoming options from the topology definition,
         // set up anything you need (e.g. database connection)
         // and when all finished run the done callback.
-        process.nextTick(done);
+        done();
     },
     process: function(msg, done) {
         // process an incoming message. msg will be JSON.
@@ -305,7 +306,7 @@ module.exports = straw.node.extend({
         // or send it via a named output. The name must be configured
         // in your topology
         this.output('named-output', msg);
-        done()
+        done();
     },
     run: function(done) {
         // start some background processing here e.g. fetch or
