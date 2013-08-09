@@ -10,6 +10,13 @@ body {
     margin: 0 0 16px 0;
 }
 
+.hero {
+    width: 100%;
+    height: 128px;
+    background: #ddd;
+    margin-bottom: 16px;
+}
+
 h2 {
     font-size: 22px;
 }
