@@ -1,7 +1,6 @@
-var straw = require('../../../lib/straw.js')
+var straw = require('../../lib/straw.js')
 
 module.exports = straw.node.extend({
-  title: 'Stats',
   timer: null,
   opts: {interval: 1000},
   stats: {},  

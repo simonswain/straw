@@ -1,11 +1,10 @@
-var straw = require('../../../lib/straw.js')
+var straw = require('../../lib/straw.js')
 
 /*
  * emits ping every interval ms
  */
 
 module.exports = straw.node.extend({
-  title: 'Ping',
   timer: null,
   opts: {interval: 1000},
   initialize: function(opts, done){

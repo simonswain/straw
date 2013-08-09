@@ -1,11 +1,10 @@
-var straw = require('../../../lib/straw.js')
+var straw = require('../../lib/straw.js')
 
 /*
  * simulate working on a long running job.
  */
 
 module.exports = straw.node.extend({
-  title: 'Heavy Lifting',
   total: 0,
   process: function(msg, done) {      
     this.total ++;

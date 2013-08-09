@@ -1,11 +1,10 @@
-var straw = require('../../../lib/straw.js')
+var straw = require('../../lib/straw.js')
 
 /*
  * emits cumulative count of messages received.
  */
 
 module.exports = straw.node.extend({
-  title: 'OddEven',
   total: 0,
   field: 'value',
   initialize: function(opts, done) {
@@ -16,7 +15,7 @@ module.exports = straw.node.extend({
   },
   process: function(msg, done) {      
     var r;
-
+    
     r = ( msg[this.field] % 2 === 0 ) ? 'even' : 'odd';
 
     this.output(r, {value: msg[this.field]});    
