@@ -1,27 +1,36 @@
-var Node = require('./index.js');
+var Node = require('../examples/nodes/oddeven.js');
+
+var node;
 
 module.exports = {
   'create': function(test) {
-    test.expect(1);
-    var node = new Node();
-    test.equal( node.title, 'OddEven', 'should be OddEven' );
-    test.done();
+    node = new Node(function(){
+      test.done();
+    });
   },
-  'process': function(test) {
+  'process-odd': function(test) {
     test.expect(2);
-    var node = new Node();
+    var counts = 0;
+    node.on('message', function(data){
 
-    node.process(
-      {value: 23},
-      function(err, result){
-        test.equal( result.result, 'odd', '23 should be odd' );
-      });
+      if(data.outlet === 'odd'){
+        test.equal( data.message.value, '23', '23 should be odd' );
+        counts ++;
+        if(counts === 2){
+          test.done();
+        }
+      }
 
-    node.process(
-      {value: 46},
-      function(err, result){
-        test.equal( result.result, 'even', '46 should be even' );
-        test.done();
-      });
+      if(data.outlet === 'even'){
+        test.equal( data.message.value, '46', '46 should be even' );
+        counts ++;
+        if(counts === 2){
+          test.done();
+        }
+      }
+    });
+
+    node.process({value: 23});
+    node.process({value: 46});
   }
 };

@@ -1,11 +1,12 @@
-var Node = require('./index.js');
+var Node = require('../examples/nodes/print.js');
+
+var node;
 
 module.exports = {
   'create': function(test) {
-    test.expect(1);
-    var node = new Node();
-    test.equal( node.title, 'Print', 'Should be Print' );
-    test.done();
+    node = new Node(function(){
+      test.done();
+    });
   }
 };
 

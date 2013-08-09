@@ -1,15 +1,15 @@
-var Node = require('./index.js');
+var Node = require('../examples/nodes/passthru.js');
+
+var node;
 
 module.exports = {
   'create': function(test) {
-    test.expect(1);
-    var node = new Node();
-    test.equal( node.title, 'Passthru', 'Should be Passthru' );
-    test.done();
+    node = new Node(function(){
+      test.done();
+    });
   },
   'run': function(test) {
     test.expect(1);
-    var node = new Node();
     node.run(function(err) {
       test.equal( err, false, 'Error should be false' );
       test.done();
@@ -17,7 +17,6 @@ module.exports = {
   },
   'stop': function(test) {
     test.expect(1);
-    var node = new Node();
     node.run(function(){});
     node.stop(function(err) {
       test.equal( err, false, 'Error should be false' );
@@ -26,7 +25,6 @@ module.exports = {
   },
   'process': function(test) {
     test.expect(1);
-    var node = new Node();
     var msg = {foo:'bar'};
     node.process(
       msg, 
@@ -38,7 +36,6 @@ module.exports = {
   },
   'output': function(test) {
     test.expect(2);
-    var node = new Node();
     var msg = {foo:'bar'};
     node.on('message', function(data){
       test.equal( data.outlet, false, 'Outlet should be default (false) outlet' );
