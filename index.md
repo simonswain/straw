@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Straw - Realtime processing framework for Node.js
+title: Straw - Realtime processing framework for NodeJS
 ---
 
 <strong>Straw helps you run a Topology of connected worker Nodes that consume, process,
