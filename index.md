@@ -3,13 +3,8 @@ layout: default
 title: Straw - Realtime processing framework for Node.js
 ---
 
-<img src="images/pipes.jpg" />
-
-Version 0.2.0 - <a href="https://github.com/simonswain/straw" id="view-on-github" class="button"><span>View on GitHub</span></a>
-
-<strong>Straw helps you run a Topology of worker Nodes that consume, process,
-generate and emit messages, connected together with message passing
-Pipes.</strong>
+<strong>Straw helps you run a Topology of connected worker Nodes that consume, process,
+generate and emit messages.</strong>
 
 Each Node is run in it's own process. Messages are passed in and out
 of Nodes as JSON.

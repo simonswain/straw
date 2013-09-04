@@ -1,22 +1,85 @@
 body {
     padding: 0 0 48px 0;
     font-family: Helvetica, Arial, sans-serif;
+    background: #ddd;
 }
 
 .header {
-    padding: 16px;
-    background: #222;
+    padding: 8px;
+    background: #000;
     color: #33a5c8;
-    margin: 0 0 16px 0;
+    margin: 0;
+    position: relative;
+}
+
+.header a {
+    color: #33a5c8;
+    text-decoration: underline;
+}
+
+.header h1 a {
+    color: #eee;
+    text-decoration: none;
+    transition: color 0.2s;
+    -webkit-transition: color 0.2s;
+}
+
+.header a:hover,
+.header h1 a:hover {
+    color: #fff;
+}
+
+.header h1 {
+    line-height: 56px;
+    margin: 0;
+    padding: 0 16px;
+}
+
+.header div {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    text-align: right;
+    font-size: 10pt;
+}
+
+.header div p {
+    margin: 0 0 0 0;
 }
 
 .hero {
-    width: 100%;
-    height: 128px;
-    background: #ddd;
-    margin-bottom: 16px;
+  background: #000 url(../img/straw-masthead.jpg) 50% 0 no-repeat;
+  height: 336px;
+  width: 100%;
+  margin-bottom: 16px;
 }
 
 h2 {
     font-size: 22px;
+}
+
+.content {
+    width: 740px;
+    margin: auto;
+}
+
+.highlight {
+    background: #ccc;
+}
+
+.highlight pre {
+    background: #ccc;
+    color: #000;
+    font-weight: bold;
+}
+
+.highlight pre code {
+    font-size: 16px;
+    color: #000;
+}
+
+code {
+    font-size: 16px;
+    color: #000;
+    background: #d6d6d6;;
 }
