@@ -2,7 +2,7 @@
 
 Realtime processing framework for Node.js
 
-Version 0.2.0
+Version 0.2.2
 
 [![Build Status](https://travis-ci.org/simonswain/straw.png)](https://travis-ci.org/simonswain/straw)
 
@@ -416,6 +416,7 @@ handling.
 * 31/01/2013 0.1.5 Cleaning up callback usage
 * 08/04/2013 0.1.6 Added pidsfile support
 * 19/07/2013 0.2.0 Removed Pubsub. Enforced callbacks.
+* 28/10/2013 0.2.2 Bugfixes
 
 ## License
 Copyright (c) 2012-2013 Simon Swain  
