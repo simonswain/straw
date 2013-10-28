@@ -36,7 +36,8 @@
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-jshint": "~0.7.0",
-    "grunt-contrib-nodeunit": "~0.2.2"
+    "grunt-contrib-nodeunit": "~0.2.2",
+    "grunt-cli": "~0.1.9"
   },
   "keywords": [
     "stream",
