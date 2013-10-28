@@ -28,16 +28,15 @@
     "test": "grunt test"
   },
   "dependencies": {
+    "node-statsd": "0.0.7",
+    "redis": "~0.9.0",
     "hiredis": "~0.1.15",
-    "redis": "~0.8.4",
-    "underscore": "~1.4.4",
-    "node-statsd": "0.0.7"
+    "underscore": "~1.5.2"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-cli": "~0.1.9",
-    "grunt-contrib-jshint": "~0.6.0",
-    "grunt-contrib-nodeunit": "~0.2.0"
+    "grunt-contrib-jshint": "~0.7.0",
+    "grunt-contrib-nodeunit": "~0.2.2"
   },
   "keywords": [
     "stream",
