@@ -34,6 +34,7 @@ exports['topology'] = {
       });
     });
   },
+
   'multi-out': function(test) {
     var topo = new Topology({
       'ping-1':{
@@ -65,25 +66,28 @@ exports['topology'] = {
       });
     });
   },
+
   'merge': function(test) {
     var topo = new Topology({
       'ping':{
         'node': __dirname + '/../examples/nodes/ping',
         'output':'ping-out'
       },
+      'count':{
+        'node': __dirname +'/../examples/nodes/count',
+        'input':'ping-out',
+        'output':'count-out'
+      },
       'oddeven':{
-        'node': __dirname + '/../examples/nodes/ping',
-        'output':{'default':'oddeven-out','odd':'odd-out','even':'even-out'}
+        'node': __dirname +'/../examples/nodes/oddeven',
+        'field': 'count',
+        'input':'count-out',
+        'output':'oddeven-out',
+        'outputs': {'odd':'odd','even':'even'}
       },
-      'count-odd':{
-        'node': __dirname + '/../examples/nodes/count',
-        'input':'odd-out',
-        'output':'count-odd-out'
-      },
-      'count-even':{
-        'node': __dirname + '/../examples/nodes/count',
-        'input':'even-out',
-        'output':'count-even-out'
+      'print':{
+        'node': __dirname + '/../examples/nodes/print',
+        'input':['odd', 'even']
       }
     }, function(err, res){
       topo.destroy(function(){
@@ -91,4 +95,5 @@ exports['topology'] = {
       });
     });
   }
+
 };
