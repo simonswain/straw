@@ -99,7 +99,8 @@ code {
     }
 
     .content {
-        width: auto;
+        font-size: 12pt;
+        line-height: 140%;
         padding: 32px 0;
     }
 
