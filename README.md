@@ -422,4 +422,4 @@ handling.
 Copyright (c) 2012-2013 Simon Swain  
 Licensed under the MIT license.
 
-[![Analytics](https://ga-beacon.appspot.com/UA-43779164-2/simonswain/straw?pixel)]
+![Analytics](https://ga-beacon.appspot.com/UA-43779164-2/simonswain/straw?pixel)
