@@ -44,6 +44,7 @@
     "stream",
     "realtime",
     "parallel",
-    "dataflow"
+    "dataflow",
+    "reactive"
   ]
 }
