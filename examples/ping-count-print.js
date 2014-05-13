@@ -17,3 +17,9 @@ var topo = new straw.topology({
 },{
   'purge': true
 });
+
+process.on( 'SIGINT', function() {
+  topo.destroy(function(){
+    console.log( 'Finished.' );
+  });
+});

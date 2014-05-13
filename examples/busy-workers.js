@@ -33,5 +33,10 @@ var topo = new straw.topology({
     'node': __dirname + '/../examples/nodes/print',
     'input':'done-out'
   }
+});
 
+process.on( 'SIGINT', function() {
+  topo.destroy(function(){
+    console.log( 'Finished.' );
+  });
 });

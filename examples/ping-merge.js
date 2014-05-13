@@ -30,3 +30,8 @@ var topo = new straw.topology({
   },
 });
 
+process.on( 'SIGINT', function() {
+  topo.destroy(function(){
+    console.log( 'Finished.' );
+  });
+});

@@ -22,3 +22,9 @@ var topo = new straw.topology({
     'input':['odd', 'even']
   }
 });
+
+process.on( 'SIGINT', function() {
+  topo.destroy(function(){
+    console.log( 'Finished.' );
+  });
+});
