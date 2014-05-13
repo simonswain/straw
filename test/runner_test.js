@@ -3,60 +3,93 @@
 var Runner = require('../lib/runner.js');
 var redis = require('redis');
 
-// exports['runner'] = {
-//   setUp: function(callback) {
-//     // this.__log = console.log;
-//     // console.log = function(){};
-//     callback();
-//   },
-//   tearDown: function(callback) {
-// //    console.log = this.__log;
-//     callback();
-//   },
-//   'new': function(test) {
-//     test.expect(3);
-
-//     var runner;
-
-//     var def = { 
-//       key: 'run-test',
-//       node: __dirname + '/../examples/nodes/passthru',
-//       input:[{key:'test-in'}],
-//       output:[{key:'test-out'}]
-//     };
-
-//     var test_msg = '{"foo":"bar"}';
-
-//     var redisIn = redis.createClient();
-//     var redisOut = redis.createClient();
-
-//     redisIn.on('message', function(channel, msg){
-//       msg = JSON.parse(msg);      
-//       test.equal( channel, def.output[0].key, 'Correct channel received');
-//       test.deepEqual( msg, test_msg, 'Test message was passed thru');
-
-//       redisIn.quit();
-//       redisOut.quit();
-//       runner.stop(function(){
-//         test.done();      
-//       });
-//     }).subscribe(def.output[0].key);
+var opts = {
+  redis: {
+    host: '127.0.0.1',
+    port: 6379,
+    prefix: 'straw-test'
+  }};
 
 
-//     var send = function() {
-//       console.log('sending');
-//      redisOut.publish(def.input[0].key, JSON.stringify(test_msg));      
-//     };
-   
-//     runner = new Runner (
-//       def,
-//       {},      
-//       function(err) {
-//         test.equal(err, false, 'No error from starting runner');
-//         // give child time to start
-//         setTimeout(send, 20);
-//       });    
+// init
 
-//   }
+// start, stop
+
+// start, stop, start
+
+// initialize, start, reboot
+
+exports['runner'] = {
+  'init-quit': function(test) {
+
+    var runner;
+
+    //test.expect(3);
+    var node = {
+      id: 'test',
+      node: __dirname + '/../examples/nodes/thru2.js',
+      input: ['test-to-node'],
+      output: ['test-from-node']
+    };
+
+    runner = new Runner (
+      node,
+      opts,
+      function(err, pid) {
+        //console.log('PID', pid);
+        runner.quit(function(){
+          test.done();      
+        });
+      });
+  },
+  'init-start-quit': function(test) {
+
+    var runner;
+
+    // start a runner, wait for it to emit a message via Redis then
+    // quit.
+
+    //test.expect(3);
+
+    var node = {
+      id: 'ping',
+      node: __dirname + '/../examples/nodes/ping2.js',
+      //input: ['test-to-node'],
+      output: ['test-from-node']
+    };
+
+    var pipe = opts.redis.prefix + ':' + node.output[0];
+
+    //var redisIn = redis.createClient();
+    var redisFromNode = redis.createClient();
+
+    var finished = function(){
+      runner.quit(function(){ 
+        redisFromNode.quit();
+       test.done();      
+      });
+    };
+
+    var brpop = function(){
+      var lkeys = [pipe, 5];
+      redisFromNode.brpop(
+        lkeys, 
+        function(err, reply){
+          test.equal(reply[0], pipe);
+          var msg = JSON.parse(reply[1]);
+          test.ok(msg.hasOwnProperty('ping'));
+          finished();
+        });
+    };
+
+    runner = new Runner (
+      node,
+      opts,
+      function(err, pid) {
+        runner.start(function(){
+          brpop();
+        });
+      });
+  }
   
-// };
+};
