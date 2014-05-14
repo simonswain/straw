@@ -11,7 +11,7 @@ exports['run'] = {
 
     var node = {
       id: 'test',
-      node: '../examples/nodes/thru2.js',
+      node: '../examples/nodes/thru.js',
       input: ['test-to-node'],
       output: ['test-from-node']
     };
