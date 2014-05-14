@@ -27,7 +27,7 @@ exports['runner'] = {
     //test.expect(3);
     var node = {
       id: 'test',
-      node: __dirname + '/../examples/nodes/thru2.js',
+      node: __dirname + '/../examples/nodes/passthru.js',
       input: ['test-to-node'],
       output: ['test-from-node']
     };
@@ -53,7 +53,7 @@ exports['runner'] = {
 
     var node = {
       id: 'ping',
-      node: __dirname + '/../examples/nodes/ping2.js',
+      node: __dirname + '/../examples/nodes/ping.js',
       //input: ['test-to-node'],
       output: ['test-from-node']
     };

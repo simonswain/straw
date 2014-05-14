@@ -24,7 +24,7 @@ exports['topo'] = {
 
     topo.add({
       id: 'ping',
-      node: 'ping2',
+      node: 'ping',
       output:'ping-out' 
     }, function(){
       topo.destroy(function(){ 
@@ -41,11 +41,11 @@ exports['topo'] = {
     // add two with the same id
     topo.add([{
       id: 'ping',
-      node: 'ping2',
+      node: 'ping',
       output:'ping-out' 
     }, {
       id: 'ping',
-      node: 'ping2',
+      node: 'ping',
       output:'ping-out' 
     }], function(){
       topo.destroy(function(){ 
@@ -81,11 +81,11 @@ exports['topo'] = {
 
     topo.add([{
       id: 'ping',
-      node: 'ping2',
+      node: 'ping',
       output:'ping-out' 
     },{
       id: 'thru',
-      node: 'thru2',
+      node: 'thru',
       input:'ping-out',
       output:'thru-out' 
     }], function(){
@@ -114,11 +114,11 @@ exports['topo'] = {
 
     topo.add([{
       id: 'ping',
-      node: 'ping2',
+      node: 'ping',
       output:'ping-out' 
     },{
       id: 'thru',
-      node: 'thru2',
+      node: 'thru',
       input:'ping-out',
       output:'thru-out' 
     }], function(){
@@ -142,11 +142,11 @@ exports['topo'] = {
 
     topo.add([{
       id: 'ping',
-      node: 'ping2',
+      node: 'ping',
       output:'ping-out' 
     },{
       id: 'thru',
-      node: 'thru2',
+      node: 'thru',
       input:'ping-out',
       output:'thru-out' 
     }], function(){
