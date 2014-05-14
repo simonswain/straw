@@ -5,7 +5,7 @@ module.exports = straw.node({
   opts: {interval: 1000},
   initialize: function(opts, done){
     this.opts.interval = opts && opts.interval || 1000;
-    process.nextTick(done);
+    done();
   },
   start: function(done) {
     var self = this;
@@ -13,11 +13,11 @@ module.exports = straw.node({
       self.ping();
     };
     this.timer = setInterval(fn, this.opts.interval);
-    done(false);
+    done();
   },
   stop: function(done) {
     clearInterval(this.timer);
-    done(false);
+    done();
   },
   ping: function() {
     this.output({

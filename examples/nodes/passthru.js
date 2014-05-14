@@ -4,5 +4,5 @@ var straw = require('../../lib/straw.js')
  * outputs whatever is received.
  */
 
-module.exports = straw.node.extend({
+module.exports = straw.node({
 });
