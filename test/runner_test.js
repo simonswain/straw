@@ -27,7 +27,7 @@ exports['runner'] = {
     //test.expect(3);
     var node = {
       id: 'test',
-      node: __dirname + '/../examples/nodes/passthru.js',
+      node: __dirname + '/../examples/nodes/thru.js',
       input: ['test-to-node'],
       output: ['test-from-node']
     };
