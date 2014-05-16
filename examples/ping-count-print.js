@@ -25,9 +25,7 @@ topo.add([{
   node: 'print',
   input: 'count-out'
 }], function(){
-
   topo.start({purge: true});
-
 });
 
 process.on( 'SIGINT', function() {
