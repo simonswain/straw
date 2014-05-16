@@ -2,7 +2,7 @@
 
 Realtime processing framework for Node.js
 
-Version 0.2.2
+Version 0.3.0
 
 [![Build Status](https://travis-ci.org/simonswain/straw.png)](https://travis-ci.org/simonswain/straw)
 
@@ -43,7 +43,7 @@ activity across a topology.
 
 ## Installing
 
-    $ npm install straw 
+    $ npm install straw
 
 ## Hacking
 
@@ -58,7 +58,7 @@ Run the tests (`npm install -g grunt-cli` first):
 Run some examples
 
     $ node examples/ping-count-print.js
-   
+
 ## Usage
 
 By convention you create your Nodes in a folder called `nodes`, and
@@ -72,37 +72,43 @@ pings.
 
 ```javascript
 var straw = require('straw');
-var topo = new straw.topology({
-  'ping':{
-    'node': __dirname + '/../examples/nodes/ping',
-    'output':'ping-out'
-  },
-  'count':{
-    'node': __dirname + '/../examples/nodes/count',
-    'input':'ping-out',
-    'output':'count-out'
-  },
-  'print':{
-    'node': __dirname + '/../examples/nodes/print',
-    'input':'count-out'
-  }
+var topo = straw.create();
+
+topo.add([{
+  id: 'ping',
+  node: 'ping',
+  output:'ping-out'
+}, {
+  id: 'count',
+  node: 'count',
+  input: 'ping-out',
+  output:'count-out'
+},{
+  id: 'print',
+  node: 'print',
+  input: 'count-out'
+}], function(){
+  topo.start();
 });
 ```
 
-Nodes extends the prototype Node and override only the methods needed
-to do their job.
+To create a Node, you define methods to override Straw's stubs, and any of your own you may need.
+
+All nodes have `initialize`, `start`, `stop` and `process`, which must execute a callback when done.
+
+Ping is an example of a node that only generates output. Nodes can
+either consume input, produce output, or both.
 
 ```javascript
 var straw = require('straw')
-module.exports = straw.node.extend({
-  title: 'Ping',
+module.exports = straw.node({
   timer: null,
   opts: {interval: 1000},
   initialize: function(opts, done){
     this.opts.interval = opts && opts.interval || 1000;
     done();
   },
-  run: function(done) {
+  start: function(done) {
     var self = this;
     var fn = function() {
       self.ping();
@@ -120,18 +126,24 @@ module.exports = straw.node.extend({
 });
 ```
 
-`process()` is called every time a message received at the Node's
-input.
+`#process()` is called every time a message received at the Node's
+input. It's your handler for inbound messages. For any interesting
+work you will most probably have to do something in it.
 
-Your code needs to call `output()` whenever you have a message to send
-out from the node, and must excute the `done` callback.
+Your code needs to call `#output()` whenever you have a message to send
+out from the node, and must excute the `done` callback when finished.
+
+Nodes process messages sequentially. `done` lets Straw know you're
+ready for the next message.
+
+Here, the done callback is being passed to `#output` and will be
+executed once the message has been successfully sent out of the node.
 
 ```javascript
 var straw = require('straw');
-module.exports = straw.node.extend({
-  title: 'Count',
+module.exports = straw.node({
   total: 0,
-  process: function(msg, done) {      
+  process: function(msg, done) {
     this.total ++;
     this.output({count: this.total}, done);
   }
@@ -139,66 +151,117 @@ module.exports = straw.node.extend({
 ```
 
 Calling `console.log` from within a node will output timestamped
-messages to the shell, showing you which Node they came from.
+messages to Straw's logge,r showing you which Node they came from.
 
 Run the topology like this:
 
-
 ```
-$ node examples/ping-count-print.js 
-2013-07-20 10:59:17 INIT     6988 print
-2013-07-20 10:59:17 STARTED  6988 print
-2013-07-20 10:59:17 INIT     6985 ping
-2013-07-20 10:59:17 STARTED  6985 ping
-2013-07-20 10:59:17 INIT     6987 count
-2013-07-20 10:59:17 STARTED  6987 count
-2013-07-20 10:59:17 TOPOLOGY STARTED
-2013-07-20 10:59:18 STDOUT   print                {"count":1}
-2013-07-20 10:59:19 STDOUT   print                {"count":2}
-2013-07-20 10:59:20 STDOUT   print                {"count":3}
+$ node examples/ping-count-print.js
+info: 2014-05-14 16:25:38 ADD      ping
+info: 2014-05-14 16:25:39 INIT     ping 15435
+info: 2014-05-14 16:25:39 ADD      count
+info: 2014-05-14 16:25:39 MESSAGE  ping                 INITIALIZED
+info: 2014-05-14 16:25:39 INIT     count 15437
+info: 2014-05-14 16:25:39 ADD      print
+info: 2014-05-14 16:25:39 MESSAGE  count                INITIALIZED
+info: 2014-05-14 16:25:39 INIT     print 15439
+info: 2014-05-14 16:25:39 MESSAGE  print                INITIALIZED
+info: 2014-05-14 16:25:39 PIPE     ping-out 0
+info: 2014-05-14 16:25:39 PIPE     count-out 0
+info: 2014-05-14 16:25:39 TOPOLOGY PURGED
+info: 2014-05-14 16:25:39 MESSAGE  ping                 STARTING
+info: 2014-05-14 16:25:39 STARTED  ping
+info: 2014-05-14 16:25:39 MESSAGE  ping                 STARTED
+info: 2014-05-14 16:25:39 MESSAGE  print                STARTING
+info: 2014-05-14 16:25:39 STARTED  print
+info: 2014-05-14 16:25:39 MESSAGE  print                STARTED
+info: 2014-05-14 16:25:39 MESSAGE  count                STARTING
+info: 2014-05-14 16:25:39 STARTED  count
+info: 2014-05-14 16:25:39 TOPOLOGY STARTED
+info: 2014-05-14 16:25:39 MESSAGE  count                STARTED
+info: 2014-05-14 16:25:40 STDOUT   print                {"count":1}
+info: 2014-05-14 16:25:41 STDOUT   print                {"count":2}
+info: 2014-05-14 16:25:42 STDOUT   print                {"count":3}
 ```
 
 Press `^C` to stop.
 
-    
-(Watching files is disabled for now until I can resolve `Error watch
-EMFILE` being thrown. You can re-enable by changing `this.watch =
-false;` to true at the top of lib/runner.js)
+If you make any changes to a node file it's process will be
+terminated, re-initialized, and if it was running, restarted. This is
+really handy in development. try running the ping-count-print example,
+edit `examples/nodes/print/index.js` (just add a space somewhere) then
+save it. You will see output in the log letting you know it's been
+stopped and restarted.
 
-If you make any changes to a node file it's process will be terminated
-and respawned. This is really handy in development. try running the
-ping-count-print example, edit `examples/nodes/print/index.js` (just
-add a space somewhere) then save it. You will see output in the log
-letting you know it's been stopped and restarted.
-
-The examples are stored in a folder named after each node, it's fine
-making a folder called nodes and naming each node's file directly.
-Just make sure you use an absolute path, e.g. `__dirname +
-'./path/to/nodes/some-node.js'` in your Topology definition.
-
-```
-nodes/my-node.js
-nodes/some-node.js
-```
-    
 ## Topology
 
-Each Node must be defined in the Topology like so:
+A Topology is a collection of Nodes. In Straw, you create a
+Topology, add nodes to it, indicating named pipes that connect the
+nodes together.
+
+Once you've made a Topology you can start or stop it processing, get
+runtime stats from it and destroy it when done.
 
 ```javascript
-'<your-key>':{
-    'node': '<absolute-path-to-node>',
+var straw = require('straw');
+var topo = straw.create();
+```
+
+You can pass options in to your topology if you need to tell it where
+Redis is, or to define a `nodes_dir`.
+
+```javascript
+var opts = {
+  nodes_dir: __dirname + '/nodes',
+  redis: {
+    host: '127.0.0.1',
+    port: 6379,
+    prefix: 'straw-example'
+  }};
+
+var topo = straw.create(opts);
+```
+
+`redis.prefix` will be prepended to all Redis keys used by that
+Topology. This is useful for partitioning Topologies on the same
+server. It is also passed in to the nodes so they can use it.
+
+You add Nodes to your Topology like so:
+
+```javascript
+topo.add({
+    'id: '<unique-name-for-node>',
+    'node': '<file node is in>',
     'input':'in-pipe-name',
     'output':'out-pipe-name',
     'outputs': {
         ['named-output', 'another-named-output']
-        },
-    'log': '<file-to-log-output-to>'
-}
+        }
+}, callback);
 ```
+You can add multiple nodes by providing an array of objects instead of
+a single object.
 
 To specify the location of a node relative to your topology code, use
 `__dirname + '/where/is/my/node.js'`.
+
+If you specified a `node_dir` in your options, you can just give the
+filename (without .js on the end). The demos in the examples folder do
+it this way.
+
+Normally you will want to store your node files in a folder called
+'`nodes'` in the same location as the code that is using them
+
+It's fine making a folder called nodes and referencing each node's
+file directly. Be sure to use an absolute path, e.g. `__dirname +
+'./path/to/nodes/some-node.js'` in your Topology definition, as nodes
+are run in their own process and will have no concept of the directory
+your topology exists in.
+
+As a convenience, if you pass in options to your Topolology containing
+`nodes_dir`: __dirname + '/path/to/nodes'` you can identify your Nodes
+by their filename (without an extension) and Straw will take care of
+finding the files for you.
 
 `input` and `output` can either be the key of a single pipe, or an
 array of pipe keys. This lets you aggregate input and branch output.
@@ -215,65 +278,34 @@ input: ['this-pipe','that-pipe']
 output: ['this-pipe','that-pipe']
 ```
 
-`log` and `outputs` are optional. All other fields are required.
+`input`, `output` and `outputs` are optional. If your node doesn't
+need input or output then you don't need them.
 
-`STDOUT` from the node (e.g. `console.log`) will be captured to the log.
+`STDOUT` from the node (e.g. `console.log`) will be captured to the
+Topology and logged.
 
-You must define named outputs in your Topology before using them in
-the node.
+Any other fields you add will be passed in to the Node as options for
+it to use as it sees fit.
 
-Any other fields will be passed in to the Node as options for it to
-use as it sees fit.
+The callback will be executed once all the nodes you provided have
+been added and initialized. From there, the topology is ready to
+start.
 
-You can optionally place a callback function as the last argument to
-`straw.topology` that will be called once all the Nodes are up and
-running.
+`topology#start` will tell all the nodes to start processing - they
+will begin to pull methods off their pipes and process them. The
+`start` method on any Nodes that have one will be called.
 
-topology#destroy will take down all the nodes and pipes used in the
-Topology.
+`topology#stop` will let nodes finish processing their current
+message, and call the `stop` method on any Nodes that have one.
 
-### Options
+Use the `start` and `stop` methods to create nodes that do processing
+without relying on incoming messages (e.g connecting to a remote
+service and getting data)
 
-You can pass options in to the Topology that will be passed in to all
-node runners. These let you set the Redis host and enable StatsD. You
-can add your own keys to `redis`, which is handy for things like
-adding prefixes to your keys in to the Node.
+`topology#destroy` will stop all the nodes and quit the Topology.
 
-```javascript
-var straw = require('straw');
-var topo = new straw.topology({
-  'ping':{
-    'node': __dirname + '/nodes/ping',
-    'output':'ping-out'
-  },
-}, {
-  pidsfile: __dirname + '/../straw-pids.js',
-  redis: {
-    host: '127.0.0.1',
-    port: 6379
-  },
-  statsd: {
-    prefix: 'straw',
-    host: '127.0.0.1',
-    port: 8125
-  }
-});
-```
+`topology#purge` will flush any unprocessed messages in the pipes.
 
-If no options or redis are provided, the default shown above will be
-used.
-
-If pidsfile is provided, when Straw starts a Topology it will write the
-PIDs of the nodes to this file, and on next start will attempt to kill
-those PIDs. This experimental feature is to try and kill Nodes left
-still running after a crash.
-
-If StatsD is provided, all node inputs and outputs (summed, and split
-out by key) will be counted with `node-statsd.increment()`, using the
-node's key as the identifier.
-
-If you provide a prefix, it will be prepended to the nodes's key so
-you can namespace your stats across multiple Topologies.
 
 ## Nodes
 
@@ -287,7 +319,6 @@ finished.
 
 ```javascript
 module.exports = straw.node.extend({
-    title: 'Human readable name',
     initialize: function(opts, done) {
         // process incoming options from the topology definition,
         // set up anything you need (e.g. database connection)
@@ -308,14 +339,14 @@ module.exports = straw.node.extend({
         this.output('named-output', msg);
         done();
     },
-    run: function(done) {
+    start: function(done) {
         // start some background processing here e.g. fetch or
         // generate data
         done();
     },
     stop: function(done) {
         // stop background processing. will be called when
-        // terminating.
+        // pausing processing or terminating node.
         done();
     }
 });
@@ -323,7 +354,7 @@ module.exports = straw.node.extend({
 
 ## Pipes
 
-Pipes are implemented using Redis lists - `lpush` and `brpop`. 
+Pipes are implemented using Redis lists - `lpush` and `brpop`.
 
 When more than one Node is connected to a given output, only one will
 receive each message. This lets you easily load-balance output from a
@@ -410,7 +441,7 @@ handling.
 ## Release History
 
 * 14/11/2012 0.1.0 Initial release
-* 15/11/2012 0.1.1 StatsD support 
+* 15/11/2012 0.1.1 StatsD support
 * 22/11/2012 0.1.2 Round-robin pipes
 * 23/01/2013 0.1.3 Taps
 * 31/01/2013 0.1.5 Cleaning up callback usage
@@ -419,7 +450,7 @@ handling.
 * 28/10/2013 0.2.2 Bugfixes
 
 ## License
-Copyright (c) 2012-2013 Simon Swain  
+Copyright (c) 2012-2013 Simon Swain
 Licensed under the MIT license.
 
 ![Analytics](https://ga-beacon.appspot.com/UA-43779164-2/simonswain/straw?pixel)
