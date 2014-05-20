@@ -42,7 +42,14 @@ var stats = function(){
   topo.stats(function(err, data){
     cls();
     console.log(new Date());
+
+    // stats.nodes show input/output counts
+    // stats.pipes show unprocessed messages in pipe
+    console.log('stats');
     console.log(data);
+
+    console.log('inspect');
+    console.log(topo.inspect());
   });
 };
 
