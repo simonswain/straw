@@ -38,9 +38,6 @@ outside the Topology so you can play nicely with existing
 infrastructure, for example having data pipe in to an Express server
 for publishing out via socket.io.
 
-StatsD support is included out of the box, giving you visibility of
-activity across a topology.
-
 ## Installing
 
     $ npm install straw
