@@ -40,9 +40,13 @@ for publishing out via socket.io.
 
 ## Installing
 
+To use Straw in your Node.JS app:
+
     $ npm install straw
 
 ## Hacking
+
+To play with or work on Straw:
 
     $ git clone git@github.com:simonswain/straw.git
     $ cd straw
@@ -52,20 +56,19 @@ Run the tests (`npm install -g grunt-cli` first):
 
     $ npm test
 
-Run some examples
+Run some examples:
 
     $ node examples/ping-count-print.js
 
 ## Usage
 
-By convention you create your Nodes in a folder called `nodes`, and
-instantiate a Topology, passing in an object describing how the nodes
-are to be piped together.
+By convention you create your Nodes in a folder called `nodes`, make a
+new empty Topology, add nodes to it, then tell it to start processing.
 
 This example has a Node that generates timestamps once a second, with
-it's output going to another that counts the cumulative number of
-pings.
+it's output going to another that counts the number of pings.
 
+The inputs and outputs connect the nodes together.
 
 ```javascript
 var straw = require('straw');
@@ -89,9 +92,12 @@ topo.add([{
 });
 ```
 
-To create a Node, you define methods to override Straw's stubs, and any of your own you may need.
+To create a Node, you export a module that overrides Straw's stub
+methods as required.
 
-All nodes have `initialize`, `start`, `stop` and `process`, which must execute a callback when done.
+All nodes have `initialize`, `start`, `stop` and `process` methods,
+which must execute a callback when done. Replace any of these, and add
+your own private methods if required.
 
 Ping is an example of a node that only generates output. Nodes can
 either consume input, produce output, or both.
@@ -106,11 +112,7 @@ module.exports = straw.node({
     done();
   },
   start: function(done) {
-    var self = this;
-    var fn = function() {
-      self.ping();
-    };
-    this.timer = setInterval(fn, this.opts.interval);
+    this.timer = setInterval(this.ping.bind(this), this.opts.interval);
     done(false);
   },
   stop: function(done) {
@@ -125,7 +127,7 @@ module.exports = straw.node({
 
 `#process()` is called every time a message received at the Node's
 input. It's your handler for inbound messages. For any interesting
-work you will most probably have to do something in it.
+work you will most probably have to do something here.
 
 Your code needs to call `#output()` whenever you have a message to send
 out from the node, and must excute the `done` callback when finished.
@@ -148,7 +150,7 @@ module.exports = straw.node({
 ```
 
 Calling `console.log` from within a node will output timestamped
-messages to Straw's logge,r showing you which Node they came from.
+messages to Straw's loggeer showing you which Node they came from.
 
 Run the topology like this:
 
@@ -183,9 +185,11 @@ info: 2014-05-14 16:25:42 STDOUT   print                {"count":3}
 
 Press `^C` to stop.
 
+### Live reload
+
 If you make any changes to a node file it's process will be
 terminated, re-initialized, and if it was running, restarted. This is
-really handy in development. try running the ping-count-print example,
+really handy in development. Try running the ping-count-print example,
 edit `examples/nodes/print/index.js` (just add a space somewhere) then
 save it. You will see output in the log letting you know it's been
 stopped and restarted.
@@ -207,6 +211,8 @@ var topo = straw.create();
 You can pass options in to your topology if you need to tell it where
 Redis is, or to define a `nodes_dir`.
 
+Logging can be silenced via the `logging` option. By default it's enabled.
+
 ```javascript
 var opts = {
   nodes_dir: __dirname + '/nodes',
@@ -214,7 +220,9 @@ var opts = {
     host: '127.0.0.1',
     port: 6379,
     prefix: 'straw-example'
-  }};
+  },
+  logging: {silent: true}
+};
 
 var topo = straw.create(opts);
 ```
@@ -222,6 +230,33 @@ var topo = straw.create(opts);
 `redis.prefix` will be prepended to all Redis keys used by that
 Topology. This is useful for partitioning Topologies on the same
 server. It is also passed in to the nodes so they can use it.
+
+### Topology Methods
+
+`#add(node)` adds a node.
+
+`#start()` will start your topology processing. Passive nodes (that
+just receive inputs) will start checking their inbound pipes for
+messages. The `#start` method on each node will be called to initiate
+any active processing.
+
+`#stop()` will call the `#stop()` method on all nodes, and stop
+messages being consumed once the current message on each node is
+finished.
+
+`#purge` clears all queued messages from the topology's pipes.
+
+`#stats(callback(err,data){})` will provide real-time stats on the
+nodes and pipes in the topology. For nodes, the in and out message
+counts are given. For pipes, the number of messages currently queued.
+See `examples/stats`.
+
+`#inspect()` returns the current structure of the topology.
+
+`#destroy(callback)` stops the topology and destroys all it's nodes.
+
+
+## Nodes
 
 You add Nodes to your Topology like so:
 
@@ -232,7 +267,8 @@ topo.add({
     'input':'in-pipe-name',
     'output':'out-pipe-name',
     'outputs': {
-        ['named-output', 'another-named-output']
+        'name': 'pipe',
+        'another: ['another-pipe-1', 'another-pipe-2']
         }
 }, callback);
 ```
@@ -241,10 +277,6 @@ a single object.
 
 To specify the location of a node relative to your topology code, use
 `__dirname + '/where/is/my/node.js'`.
-
-If you specified a `node_dir` in your options, you can just give the
-filename (without .js on the end). The demos in the examples folder do
-it this way.
 
 Normally you will want to store your node files in a folder called
 '`nodes'` in the same location as the code that is using them
@@ -258,7 +290,8 @@ your topology exists in.
 As a convenience, if you pass in options to your Topolology containing
 `nodes_dir`: __dirname + '/path/to/nodes'` you can identify your Nodes
 by their filename (without an extension) and Straw will take care of
-finding the files for you.
+finding the files for you. The demos in the examples folder do it this
+way.
 
 `input` and `output` can either be the key of a single pipe, or an
 array of pipe keys. This lets you aggregate input and branch output.
@@ -273,6 +306,23 @@ output: 'that-pipe'
 // multiple
 input: ['this-pipe','that-pipe']
 output: ['this-pipe','that-pipe']
+```
+
+You can provide multiple named outputs from a node. This lets you call
+`#output(<name>, message, callback)` to send a message to a specific
+output. Use this when you need to do routing based on the message
+content.
+
+Named outputs are specified as key-value pairs. The key is the name of
+the output. The value can be a string (single pipe) or array (multiple
+destinations for the same output).
+
+```javascript
+// named outputs
+outputs: {
+   'futures':'futures', 
+   'options':['options-1','options-2]
+ }
 ```
 
 `input`, `output` and `outputs` are optional. If your node doesn't
@@ -315,37 +365,33 @@ In the `#initialize` method, you must call `done()` when you're
 finished.
 
 ```javascript
-module.exports = straw.node.extend({
-    initialize: function(opts, done) {
-        // process incoming options from the topology definition,
-        // set up anything you need (e.g. database connection)
-        // and when all finished run the done callback.
-        done();
-    },
-    process: function(msg, done) {
-        // process an incoming message. msg will be JSON.
+var straw = require('straw');
 
-        // this example just passes thru msg. normally you would do
-        // some work on it here.
-        // ...
-        // and send it via the default output
-        this.output(msg);
-
-        // or send it via a named output. The name must be configured
-        // in your topology
-        this.output('named-output', msg);
-        done();
-    },
-    start: function(done) {
-        // start some background processing here e.g. fetch or
-        // generate data
-        done();
-    },
-    stop: function(done) {
-        // stop background processing. will be called when
-        // pausing processing or terminating node.
-        done();
-    }
+var Node = straw.node({
+  initialize: function(opts, done) {
+    // process incoming options from the topology definition, set up
+    // anything you need (e.g. database connection, initial data) and
+    // when all finished run the done callback.
+    done();
+  },
+  process: function(msg, done) {
+    // process an incoming message. msg will be JSON.
+    // this example just passes the message tru. normally you would do
+    // some work on it here.
+    // ...
+    // and send it via the default output
+    this.output(msg, done);
+  },
+  start: function(done) {
+    // start some background processing here e.g. fetch or
+    // generate data, set an interval timer.
+    done();
+  },
+  stop: function(done) {
+    // stop background processing. will be called when
+    // pausing processing or terminating node.
+    done();
+  }
 });
 ```
 
@@ -355,9 +401,9 @@ Pipes are implemented using Redis lists - `lpush` and `brpop`.
 
 When more than one Node is connected to a given output, only one will
 receive each message. This lets you easily load-balance output from a
-node.
+node by connecting more than one downstream node to it's output.
 
-When a node finished processing a message it must call the `done`
+When a node finishes processing a message it must call the `done`
 callback. This signals it's ready for the next message.
 
 If you want a message to go to several nodes, create multiple outputs
@@ -387,19 +433,6 @@ tap..on('message', function() {
   // ...
 });
 
-```
-
-### Stats
-
-Nodes accumulate counts of messages emitted. You can use the count
-method to count arbitrary values also.
-
-```javascript
-this.count('some-key');
-this.count('some-key', howmany);
-
-this.counts(); // {"messages": 5, "some-key":4}
-this.counts("some-key"); // 4
 ```
 
 ## Installing as a service
@@ -445,9 +478,8 @@ handling.
 * 08/04/2013 0.1.6 Added pidsfile support
 * 19/07/2013 0.2.0 Removed Pubsub. Enforced callbacks.
 * 28/10/2013 0.2.2 Bugfixes
+* 27/05/2014 0.3.0 Version 3 first cut
 
 ## License
-Copyright (c) 2012-2013 Simon Swain
+Copyright (c) 2012-2014 Simon Swain
 Licensed under the MIT license.
-
-![Analytics](https://ga-beacon.appspot.com/UA-43779164-2/simonswain/straw?pixel)
