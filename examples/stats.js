@@ -22,12 +22,12 @@ var topo = straw.create(opts);
 topo.add([{
   id: 'ping',
   node: 'ping',
-  output:'ping-out' 
+  output: 'ping-out' 
 }, {
   id: 'count',
   node: 'count',
   input: 'ping-out',
-  output:'count-out' 
+  output: 'count-out' 
 },{
   id: 'print',
   node: 'print',
