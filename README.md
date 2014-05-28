@@ -28,7 +28,7 @@ message at a time.
 
 Redis is used for message passing but Nodes are shielded from
 implementation. All you need to write is the processing code, extend a
-handler for receiving messages and call a method to send.
+handler for receiving messages and call a method to output a message.
 
 There is nothing preventing a node receiving or sending outside the
 Topology, e.g. write to a database, fetch or listen for network data.
@@ -423,11 +423,12 @@ behave the same as those you would write inside your nodes.
 
 ```javascript
 var tap = new straw.tap({
-  'input':'from-topology-pipe,
-  'output':'to-topology-pipe
+  input: 'from-topology-pipe,
+  output: 'to-topology-pipe,
+  redis: { ... optional redis config ... }
 });
 
-tap.send(msg);
+tap.output(msg);
 
 tap..on('message', function() {
   // ...
