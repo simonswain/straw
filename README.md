@@ -2,7 +2,7 @@
 
 Realtime processing framework for Node.js
 
-Version 0.2.4
+Version 0.2.5
 
 [![Build Status](https://travis-ci.org/simonswain/straw.png)](https://travis-ci.org/simonswain/straw)
 
@@ -417,7 +417,7 @@ handling.
 * 08/04/2013 0.1.6 Added pidsfile support
 * 19/07/2013 0.2.0 Removed Pubsub. Enforced callbacks.
 * 28/10/2013 0.2.2 Bugfixes
-* 23/06/2014 0.2.4 Bugfixe for Redis host:port
+* 23/06/2014 0.2.5 Redis remote host fix
 
 ## License
 Copyright (c) 2012-2014 Simon Swain  
