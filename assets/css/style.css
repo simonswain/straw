@@ -12,7 +12,7 @@ body {
     margin: auto;
     padding: 8px 0;
     background: #000;
-    color: #05908d;
+    color: #00DBD7;
     position: relative;
 }
 
@@ -30,10 +30,11 @@ body {
     padding: 0;
     float: left;
     line-height: 52px;
+    font-weight: normal;
 }
 
 .header a {
-    color: #05908d;
+    color: #00DBD7;
     text-decoration: underline;
 }
 
@@ -55,13 +56,26 @@ body {
 }
 
 .hero {
-    background: #000 url(../img/straw-masthead.jpg) 50% 0 no-repeat;
-    height: 336px;
+    background: #000 url(../img/straw-masthead.jpg) 50% 88% no-repeat;
+    height: 184px;
     width: 100%;
     margin-bottom: 16px;
+    border-bottom: 12px solid #111;
+}
+
+h1 {
+    font-weight: normal;
+}
+
+h1.tag {
+    font-size: 20pt;
+    font-weight: normal;
+    line-height: 130%;
+    margin-bottom: 24px;
 }
 
 h2 {
+    font-weight: normal;
     font-size: 22px;
 }
 
