@@ -7,8 +7,16 @@ Version 0.3.0
 [![Build Status](https://travis-ci.org/simonswain/straw.png)](https://travis-ci.org/simonswain/straw)
 
 Straw lets you run a Topology of worker Nodes that consume, process,
-generate and emit messages, connected together with message passing
-Pipes.
+generate and emit messages.
+
+## Resources
+
+* [Straw talk at JSconf.asia 2013](https://www.youtube.com/watch?v=Q0iBoqhUVck)
+* [Haystack - Twitter firehose consumer](https://github.com/simonswain/haystack) Straw demo app
+
+## Introduction
+
+Using Straw you connect together a set of worker Nodes.
 
 Each Node is run in it's own process. Messages are passed in and out
 of Nodes as JSON.
@@ -20,8 +28,7 @@ A simple Topology might look like this
 ```
 
 Nodes can have multiple inputs and outputs. Messages can be passed out
-to a connected pipe via a Node's default output or any number of
-arbitrarily named outputs.
+default output or any number of arbitrarily named outputs.
 
 Messages are queued between Nodes, with each Node processing one
 message at a time.
@@ -50,7 +57,7 @@ To play with or work on Straw:
 
     $ git clone git@github.com:simonswain/straw.git
     $ cd straw
-    $ npm install -d
+    $ npm install
 
 Run the tests (`npm install -g grunt-cli` first):
 
@@ -484,3 +491,5 @@ handling.
 ## License
 Copyright (c) 2012-2014 Simon Swain
 Licensed under the MIT license.
+
+![Analytics](https://ga-beacon.appspot.com/UA-43779164-2/simonswain/straw?pixel)
