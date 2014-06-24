@@ -1,23 +1,64 @@
 var straw = require('../lib/straw.js');
 
-var topo = new straw.topology({
-  'ping-1':{
-    'node': __dirname +'/../examples/nodes/ping',
-    'interval': 100,
-    'output':'ping-out'
-  },
-  'ping-2':{
-    'node': __dirname +'/../examples/nodes/ping',
-    'interval': 3333,
-    'output':'ping-out'
-  },
-  'consume':{
-    'node': __dirname +'/../examples/nodes/consume',
-    'input': 'ping-out'
-  },
-  'stats':{
-    'interval': 1000,
-    'node': __dirname + '/../examples/nodes/stats'
-  }
+var cls = function(){
+  process.stdout.write('\u001B[2J\u001B[0;0f');
+};
+
+var opts = {
+  nodes_dir: __dirname + '/nodes',
+  redis: {
+    host: '127.0.0.1',
+    port: 6379,
+    prefix: 'straw-example'
+  }};
+
+opts.logging = {
+  silent: true
+}
+
+
+var topo = straw.create(opts);
+
+topo.add([{
+  id: 'ping',
+  node: 'ping',
+  output: 'ping-out' 
+}, {
+  id: 'count',
+  node: 'count',
+  input: 'ping-out',
+  output: 'count-out' 
+},{
+  id: 'print',
+  node: 'print',
+  input: 'count-out'
+}], function(){
+  topo.start({
+    purge: true
+  });
 });
 
+var stats = function(){
+  topo.stats(function(err, data){
+    cls();
+    console.log(new Date());
+
+    // stats.nodes show input/output counts
+    // stats.pipes show unprocessed messages in pipe
+    console.log('stats');
+    console.log(data);
+
+    console.log('inspect');
+    console.log(topo.inspect());
+  });
+};
+
+
+var interval = setInterval(stats, 1000);
+
+process.on( 'SIGINT', function() {
+  clearInterval(interval);
+  topo.destroy(function(){
+    console.log( 'Finished.' );
+  });
+});

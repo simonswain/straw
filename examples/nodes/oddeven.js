@@ -4,14 +4,14 @@ var straw = require('../../lib/straw.js')
  * emits cumulative count of messages received.
  */
 
-module.exports = straw.node.extend({
+module.exports = straw.node({
   total: 0,
   field: 'value',
   initialize: function(opts, done) {
     if ( typeof this.opts.field !== 'undefined' ) {
       this.field = this.opts.field;
     }
-    process.nextTick(done);
+    done();
   },
   process: function(msg, done) {      
     var r;
@@ -21,8 +21,8 @@ module.exports = straw.node.extend({
     this.output(r, {value: msg[this.field]});    
     this.output(false, msg);
 
-    if ( done ) {
-      done(false, {value: msg[this.field], result: r});
+    if (done) {
+      done(null, {value: msg[this.field], result: r});
     }
   }
 });
