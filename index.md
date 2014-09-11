@@ -311,7 +311,7 @@ destinations for the same output).
 // named outputs
 outputs: {
    'futures':'futures', 
-   'options':['options-1','options-2]
+   'options':['options-1','options-2']
  }
 ```
 
