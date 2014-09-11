@@ -10,6 +10,10 @@ title: Straw - Realtime processing framework for NodeJS
 * [Straw talk at JSconf.asia 2013](https://www.youtube.com/watch?v=Q0iBoqhUVck)
 * [Haystack - Twitter firehose consumer](https://github.com/simonswain/haystack) Straw demo app
 
+## Mailing List
+
+[Straw JS Google Group](https://groups.google.com/d/forum/strawjs)
+
 ## Introduction
 
 Using Straw you connect together a set of worker Nodes.
