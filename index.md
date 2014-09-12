@@ -5,6 +5,31 @@ title: Straw - Realtime processing framework for NodeJS
 
 <h1 class="tag">Straw lets you run a Topology of worker Nodes that consume, process, generate and emit messages.</h1>
 
+## Use Cases
+
+Use it anywhere you need data processed in real-time.
+
+Straw is ideal for building flux style reactive webapps.
+
+You create processing nodes that pass messages to each other or the
+outside world.
+
+Straw's approach makes it easy to break your problem down in to small
+steps and develop iteratively.
+
+Each step in the flow is a separate unix process that Straw manages
+for you, automatically making use of multiple cores, and simplifying
+spreading the load across multiple machines.
+
+[ASX Energy](https://asxenergy.com.au) uses Straw to consume live
+market data via a FIX feed from the exchange, deal with each different
+type of message from the market, route them to historical storage,
+implement a delayed feed from the live one, and stream messages to web
+clients in real-time over socket.io.
+
+[Haystack](https://github.com/simonswain/haystack) provides an example
+of how you might do something similar.
+
 ## Resources
 
 * [Straw talk at JSconf.asia 2013](https://www.youtube.com/watch?v=Q0iBoqhUVck)
