@@ -339,7 +339,7 @@ destinations for the same output).
 ```javascript
 // named outputs
 outputs: {
-   'futures':'futures', 
+   'futures':'futures',
    'options':['options-1','options-2']
  }
 ```
