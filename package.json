@@ -31,8 +31,7 @@
     "winston": "^0.7.3",
     "async": "^0.9.0",
     "underscore": "^1.6.0",
-    "redis": "^0.10.3",
-    "hiredis": "^0.1.17"
+    "redis": "^0.10.3"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
