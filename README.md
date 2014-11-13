@@ -517,7 +517,7 @@ handling.
 * 28/10/2013 0.2.2 Bugfixes
 * 23/06/2014 0.2.5 Redis remote host fix
 * 25/06/2014 0.3.0 Version 3
-* 14/11/2014 0.3.1 Remove Hiredis, added bind on stop (thans @a-s-o)
+* 14/11/2014 0.3.1 Remove Hiredis, added bind on stop (thanks @a-s-o)
 
 ## License
 
