@@ -2,7 +2,7 @@
 
 Realtime processing framework for Node.js
 
-Version 0.3.1
+Version 0.3.2
 
 [![Build Status](https://travis-ci.org/simonswain/straw.png)](https://travis-ci.org/simonswain/straw)
 
@@ -518,10 +518,11 @@ handling.
 * 23/06/2014 0.2.5 Redis remote host fix
 * 25/06/2014 0.3.0 Version 3
 * 14/11/2014 0.3.1 Remove Hiredis, added bind on stop (thanks @a-s-o)
+* 10/03/2015 0.3.2 Update packages
 
 ## License
 
-Copyright (c) 2012-2014 Simon Swain
+Copyright (c) 2012-2015 Simon Swain
 
 Licensed under the MIT license.
 
