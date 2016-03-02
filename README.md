@@ -412,8 +412,8 @@ var Node = straw.node({
   },
   process: function(msg, done) {
     // process an incoming message. msg will be JSON.
-    // this example just passes the message tru. normally you would do
-    // some work on it here.
+    // this example just passes the message through. normally you
+    // would do some work on it here.
     // ...
     // and send it via the default output
     this.output(msg, done);
