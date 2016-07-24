@@ -38,7 +38,7 @@ exports['runner'] = {
       function(err, pid) {
         //console.log('PID', pid);
         runner.quit(function(){
-          test.done();      
+          test.done();
         });
       });
   },
@@ -64,16 +64,16 @@ exports['runner'] = {
     var redisFromNode = redis.createClient();
 
     var finished = function(){
-      runner.quit(function(){ 
+      runner.quit(function(){
         redisFromNode.quit();
-       test.done();      
+        test.done();
       });
     };
 
     var brpop = function(){
       var lkeys = [pipe, 5];
       redisFromNode.brpop(
-        lkeys, 
+        lkeys,
         function(err, reply){
           test.equal(reply[0], pipe);
           var msg = JSON.parse(reply[1]);
@@ -91,5 +91,5 @@ exports['runner'] = {
         });
       });
   }
-  
+
 };
