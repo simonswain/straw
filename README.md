@@ -2,7 +2,7 @@
 
 Realtime processing framework for Node.js
 
-Version 0.4.0
+Version 0.4.1
 
 [![Build Status](https://travis-ci.org/simonswain/straw.png)](https://travis-ci.org/simonswain/straw)
 
@@ -518,7 +518,7 @@ Straw takes some inspiration from
 * 25/06/2014 0.3.0 Version 3
 * 14/11/2014 0.3.1 Remove Hiredis, added bind on stop (thanks @a-s-o)
 * 10/03/2015 0.3.2 Update packages
-* 24/07/2016 0.4.0 Update node and deps
+* 24/07/2016 0.4.1 Update node and deps
 
 ## License
 
