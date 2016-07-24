@@ -2,7 +2,7 @@
 
 Realtime processing framework for Node.js
 
-Version 0.3.2
+Version 0.4.0
 
 [![Build Status](https://travis-ci.org/simonswain/straw.png)](https://travis-ci.org/simonswain/straw)
 
@@ -502,8 +502,7 @@ end script
 Straw takes some inspiration from
 [Storm](https://github.com/nathanmarz/storm) and
 [Max/MSP](http://cycling74.com). It uses some code and concepts from
-[Backbone](http://backbonejs.org) for the node definitions and event
-handling.
+[Backbone](http://backbonejs.org) for the node definitions and event handling.
 
 ## Release History
 
@@ -519,10 +518,11 @@ handling.
 * 25/06/2014 0.3.0 Version 3
 * 14/11/2014 0.3.1 Remove Hiredis, added bind on stop (thanks @a-s-o)
 * 10/03/2015 0.3.2 Update packages
+* 24/07/2016 0.4.0 Update node and deps
 
 ## License
 
-Copyright (c) 2012-2015 Simon Swain
+Copyright (c) 2012-2016 Simon Swain
 
 Licensed under the MIT license.
 
